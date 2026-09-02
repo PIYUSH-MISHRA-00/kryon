@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
     kotlin("jvm") version "2.0.21"
     `java-library`
@@ -131,7 +133,15 @@ signing {
     // string rather than leaving the variable unset, so a null check treats "no signing
     // key configured" as "signing key configured, and it is empty" -- which fails with
     // "Could not read PGP secret key" instead of skipping.
-    val key = providers.environmentVariable("SIGNING_KEY").orNull?.takeIf { it.isNotBlank() }
+    // Accepts the signing key in either form: the raw ASCII-armored block, or that block
+    // base64-encoded. Base64 is what most CI guides tell you to paste, because it survives
+    // copy-paste and shell quoting -- but Gradle's useInMemoryPgpKeys wants the armor
+    // itself, so decode when the value does not already look like one.
+    val raw = providers.environmentVariable("SIGNING_KEY").orNull?.takeIf { it.isNotBlank() }
+    val key = raw?.let { value ->
+        if (value.contains("BEGIN PGP")) value
+        else String(Base64.getMimeDecoder().decode(value.trim()))
+    }
     val password = providers.environmentVariable("SIGNING_PASSWORD").orNull
     isRequired = key != null
     if (key != null) {
