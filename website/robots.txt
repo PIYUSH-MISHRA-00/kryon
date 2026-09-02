@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://piyush-mishra-00.github.io/kryon/sitemap.xml

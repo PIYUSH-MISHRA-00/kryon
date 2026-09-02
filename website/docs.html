@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — Kryon</title>
+<meta name="description" content="Kryon documentation: getting started, architecture, security model, the language-neutral specification, and the Python SDK reference.">
+<link rel="canonical" href="https://piyush-mishra-00.github.io/kryon/docs.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kryon">
+<meta property="og:title" content="Documentation — Kryon">
+<meta property="og:description" content="Getting started, architecture, security model, specification and SDK reference for Kryon.">
+<meta property="og:url" content="https://piyush-mishra-00.github.io/kryon/docs.html">
+<meta name="twitter:card" content="summary">
+
+<script>
+  try {
+    var t = localStorage.getItem("kryon-theme");
+    if (t) document.documentElement.setAttribute("data-theme", t);
+  } catch (e) {}
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="./">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="1.5" y="3.5" width="21" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9l3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12.5 15.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      Kryon
+    </a>
+    <nav class="site" aria-label="Main">
+      <a href="./#features" class="hide-sm">Features</a>
+      <a href="./#architecture" class="hide-sm">Architecture</a>
+      <a href="./#security">Security</a>
+      <a href="docs.html" aria-current="page">Docs</a>
+      <a href="https://github.com/PIYUSH-MISHRA-00/kryon">GitHub</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle colour theme" title="Toggle colour theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero" style="padding-block: 3.5rem 2.5rem">
+  <div class="wrap">
+    <h1 style="font-size: clamp(2rem, 5vw, 2.75rem)">Documentation</h1>
+    <p class="tagline">
+      The documentation lives in the repository, so it is versioned with the code it
+      describes and can never quietly drift out of date. These links go straight to it.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Install and run</h2>
+    <p class="section-lede">Python is the only implemented SDK today.</p>
+
+    <div class="code" style="margin-bottom:2rem">
+      <div class="code-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="name">shell</span>
+        <button class="copy" type="button" data-copy>Copy</button>
+      </div>
+<pre><code><span class="t-com"># Not yet published to PyPI — install from source until the first release.</span>
+pip install <span class="t-str">"kryon @ git+https://github.com/PIYUSH-MISHRA-00/kryon.git#subdirectory=python"</span></code></pre>
+    </div>
+
+    <div class="grid">
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/getting-started/overview.md">
+        <h3>Overview</h3>
+        <p>What Kryon is, what it is not, and the three design decisions that shape the API.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/getting-started/installation.md">
+        <h3>Installation</h3>
+        <p>Per ecosystem, with the honest status of each.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/getting-started/first-terminal.md">
+        <h3>Your first commands</h3>
+        <p>From one command to a live streaming process, in eight steps.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/python/README.md">
+        <h3>Python SDK reference</h3>
+        <p>Every option, result field, process method and error, with platform notes.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Understand it</h2>
+    <div class="grid">
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/overview.md">
+        <h3>Architecture</h3>
+        <p>The five layers, why each boundary is where it is, and what is deliberately absent.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/sdk-design.md">
+        <h3>SDK design</h3>
+        <p>How five SDKs stay one product — and why there is no shared native core.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/guides/why-kryon.md">
+        <h3>Why Kryon?</h3>
+        <p>Honest comparison with subprocess APIs, PTY libraries and terminal components — including when to use those instead.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/guides/platform-support.md">
+        <h3>Platform support</h3>
+        <p>The compatibility matrix, and the Windows differences that will bite you.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Read before shipping</h2>
+    <p class="section-lede">
+      Kryon executes arbitrary commands. These four documents are the ones that matter most.
+    </p>
+    <div class="grid">
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/security/threat-model.md">
+        <h3>Threat model</h3>
+        <p>What Kryon defends against, what it explicitly does not, and the attacker scenarios in a table.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/security/command-execution.md">
+        <h3>Command execution</h3>
+        <p>Argument vectors versus shell strings, and what the vector still does not protect.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/security/remote-execution.md">
+        <h3>Remote execution</h3>
+        <p>The only correct shape for a browser-facing terminal, and the one that is a breach.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/security/sandboxing.md">
+        <h3>Sandboxing</h3>
+        <p>What actually isolates a process. None of it is Kryon.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Specification</h2>
+    <p class="section-lede">
+      Normative and language-neutral. Where the specification and the documentation disagree,
+      the specification wins and the documentation has a bug.
+    </p>
+    <div class="grid">
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/spec/execution.md">
+        <h3>Execution</h3>
+        <p>Options, results, termination reasons, timeouts, output limits, the failure model.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/spec/process.md">
+        <h3>Process</h3>
+        <p>Streaming, backpressure, input, signals, lifecycle, resource ownership.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/spec/errors.md">
+        <h3>Errors</h3>
+        <p>The taxonomy, and the rule for which failures are errors at all.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/spec/terminal.md">
+        <h3>Terminal <span class="badge spec">Design</span></h3>
+        <p>PTY sessions and the emulator model. Not implemented.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/spec/transport.md">
+        <h3>Transport <span class="badge spec">Design</span></h3>
+        <p>The transport interface and the security requirements for a server. Not implemented.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/spec/conformance.md">
+        <h3>Conformance</h3>
+        <p>The helper contract and corpus format that make one test suite run from five languages.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Contribute</h2>
+    <div class="grid">
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/CONTRIBUTING.md">
+        <h3>Contributing</h3>
+        <p>Setup, branching, commits, and what gets a pull request declined.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/development/testing.md">
+        <h3>Testing</h3>
+        <p>Unit, conformance and platform tests — and what must always be tested.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/sdk-design.md#adding-an-sdk">
+        <h3>Add an SDK</h3>
+        <p>The highest-value contribution available. Six steps, in order.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/development/releases.md">
+        <h3>Releases</h3>
+        <p>Versioning, tags, registries and the rules about credentials.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fine">
+      <span>Kryon — Apache-2.0 licensed. Built by <a href="https://github.com/PIYUSH-MISHRA-00">PIYUSH-MISHRA-00</a>.</span>
+      <span class="mono">alpha · 0.1.0 · not a sandbox</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/main.js"></script>
+</body>
+</html>

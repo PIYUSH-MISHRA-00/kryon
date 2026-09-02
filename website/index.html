@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kryon — Powerful terminal execution, everywhere</title>
+<meta name="description" content="Kryon is a cross-platform terminal execution platform: run system commands, drive interactive processes and stream their output, with one conceptual API across Python, TypeScript, Dart, Java and Kotlin.">
+<link rel="canonical" href="https://piyush-mishra-00.github.io/kryon/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kryon">
+<meta property="og:title" content="Kryon — Powerful terminal execution, everywhere">
+<meta property="og:description" content="Run system commands, drive interactive processes and stream their output, with one conceptual API across five languages.">
+<meta property="og:url" content="https://piyush-mishra-00.github.io/kryon/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kryon — Powerful terminal execution, everywhere">
+<meta name="twitter:description" content="A cross-platform terminal execution platform for command execution, interactive processes and embeddable terminals.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "Kryon",
+  "description": "A cross-platform terminal execution platform for system command execution, interactive processes, PTY sessions and embeddable terminal experiences.",
+  "codeRepository": "https://github.com/PIYUSH-MISHRA-00/kryon",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "programmingLanguage": ["Python", "TypeScript", "Dart", "Java", "Kotlin"],
+  "author": { "@type": "Person", "name": "PIYUSH-MISHRA-00" }
+}
+</script>
+
+<script>
+  // Applied before first paint so the page never flashes the wrong theme.
+  try {
+    var t = localStorage.getItem("kryon-theme");
+    if (t) document.documentElement.setAttribute("data-theme", t);
+  } catch (e) { /* private mode, blocked storage — the media query still works */ }
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="./">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="1.5" y="3.5" width="21" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9l3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12.5 15.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      Kryon
+    </a>
+    <nav class="site" aria-label="Main">
+      <a href="#features" class="hide-sm">Features</a>
+      <a href="#architecture" class="hide-sm">Architecture</a>
+      <a href="#security">Security</a>
+      <a href="docs.html">Docs</a>
+      <a href="https://github.com/PIYUSH-MISHRA-00/kryon">GitHub</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle colour theme" title="Toggle colour theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ---------------------------------------------------------------- hero -->
+<section class="hero">
+  <div class="wrap">
+    <p class="status-pill">alpha · 0.1.0 · Python SDK only</p>
+    <h1>Powerful terminal execution, everywhere.</h1>
+    <p class="tagline">
+      Run operating-system commands, drive interactive processes, and stream their output —
+      with one conceptual API being built across Python, TypeScript, Dart, Java and Kotlin.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="docs.html">Get started</a>
+      <a class="btn" href="https://github.com/PIYUSH-MISHRA-00/kryon">GitHub</a>
+      <a class="btn" href="https://github.com/PIYUSH-MISHRA-00/kryon/tree/main/spec">Specification</a>
+    </div>
+
+    <div class="code">
+      <div class="code-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="name">python</span>
+        <button class="copy" type="button" data-copy>Copy</button>
+      </div>
+<pre><code><span class="t-kw">from</span> kryon <span class="t-kw">import</span> Runtime
+
+runtime = <span class="t-fn">Runtime</span>(encoding=<span class="t-str">"utf-8"</span>, timeout=<span class="t-num">30</span>)
+
+<span class="t-com"># Run it and tell me what happened.</span>
+result = runtime.<span class="t-fn">execute</span>(<span class="t-str">"git"</span>, [<span class="t-str">"status"</span>, <span class="t-str">"--porcelain"</span>])
+<span class="t-fn">print</span>(result.stdout, result.exit_code, result.ok)
+
+<span class="t-com"># Start it and let me talk to it.</span>
+<span class="t-kw">with</span> runtime.<span class="t-fn">spawn</span>(<span class="t-str">"pip"</span>, [<span class="t-str">"install"</span>, <span class="t-str">"numpy"</span>]) <span class="t-kw">as</span> proc:
+    <span class="t-kw">for</span> stream, chunk <span class="t-kw">in</span> proc:
+        <span class="t-fn">print</span>(chunk.<span class="t-fn">decode</span>(), end=<span class="t-str">""</span>)</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------ features -->
+<section id="features">
+  <div class="wrap">
+    <h2>What makes it different</h2>
+    <p class="section-lede">
+      Not a better <code>subprocess</code>. One well-specified execution model, implemented
+      natively in each language, with the terminal layers built on the same foundation
+      instead of alongside it.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>The dangerous thing has a different name</h3>
+        <p>
+          <code>execute()</code> passes arguments as a vector — no shell, ever. Shell
+          semantics live behind <code>execute_shell()</code>, a separate method name rather
+          than a <code>shell=True</code> flag, so reaching for it is visible in every diff.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Failing to start is an error. Failing while running is a result.</h3>
+        <p>
+          A missing executable raises — nothing ran. A process that exited <code>1</code>
+          returns a result, because <code>grep</code> exits <code>1</code> to mean “no match”.
+          <code>check=True</code> opts into strictness, and every error carries the result it
+          came from, stderr included.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Limits that actually hold</h3>
+        <p>
+          Timeouts terminate, wait a documented grace period, then kill — including a process
+          that ignores <code>SIGTERM</code>. Output caps bound memory <em>during</em> the
+          flood, not after buffering it.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Nothing is left running</h3>
+        <p>
+          Leaving a scope, cancelling an async task, or a timeout firing all terminate the
+          child <em>before</em> control returns. Kryon never hands back the flow of execution
+          with a process still alive.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Streaming with real backpressure</h3>
+        <p>
+          Output arrives as it is produced, through a bounded queue. Stop consuming and Kryon
+          stops reading, so the child blocks instead of your heap growing.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>One behaviour, enforced not promised</h3>
+        <p>
+          Every SDK runs the same conformance corpus — one JSON file, never forked per
+          language, where each case records what would break in the real world if it
+          regressed.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Zero dependencies</h3>
+        <p>
+          The Python SDK depends on nothing. Adding a dependency to a package that already
+          runs arbitrary programs is adding supply-chain risk to the worst possible place.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>No hidden behaviour</h3>
+        <p>
+          No telemetry, no analytics, no update check, no phoning home, no implicit shell, no
+          global state. Kryon makes no network calls of its own, and has no configuration
+          that could enable any.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- -------------------------------------------------------- architecture -->
+<section id="architecture">
+  <div class="wrap">
+    <h2>Five layers, each useful alone</h2>
+    <p class="section-lede">
+      Most projects in this space fuse two or three of these, and that fusion is what makes
+      them hard to reuse. Running <code>git status</code> needs no terminal. A web terminal
+      rendering with an existing component needs a PTY but not an emulator. Turning a
+      recorded CI log into a rendered screen needs the emulator and nothing else.
+    </p>
+
+    <div class="layers">
+      <div class="layer implemented">
+        <span class="n">1</span>
+        <span class="title">Execution engine</span>
+        <span class="desc">Spawn, streams, signals, limits, lifecycle</span>
+        <span class="badge done">Implemented</span>
+      </div>
+      <div class="layer">
+        <span class="n">2</span>
+        <span class="title">PTY engine</span>
+        <span class="desc">openpty and ConPTY — makes a process believe it has a terminal</span>
+        <span class="badge spec">Specified</span>
+      </div>
+      <div class="layer">
+        <span class="n">3</span>
+        <span class="title">Transport</span>
+        <span class="desc">Local, WebSocket, SSH — carries a session somewhere else</span>
+        <span class="badge spec">Specified</span>
+      </div>
+      <div class="layer">
+        <span class="n">4</span>
+        <span class="title">Terminal emulator</span>
+        <span class="desc">Pure ANSI/VT state machine. Bytes in, screen out. No I/O.</span>
+        <span class="badge spec">Specified</span>
+      </div>
+      <div class="layer">
+        <span class="n">5</span>
+        <span class="title">Renderer</span>
+        <span class="desc">Web, Flutter, JVM, native</span>
+        <span class="badge todo">Planned</span>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:1.5rem">
+      Only layer 1 exists today, in Python. <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/overview.md">Read the architecture</a>
+      or check the <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/spec/README.md#implementation-status">status table</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------ examples -->
+<section id="examples">
+  <div class="wrap">
+    <h2>Examples</h2>
+    <p class="section-lede">Every snippet here runs today against the Python SDK.</p>
+
+    <div class="tabs" role="tablist" aria-label="Examples">
+      <button class="tab" role="tab" id="tab-run" aria-controls="panel-run" aria-selected="true">Run a command</button>
+      <button class="tab" role="tab" id="tab-stream" aria-controls="panel-stream" aria-selected="false">Stream output</button>
+      <button class="tab" role="tab" id="tab-safe" aria-controls="panel-safe" aria-selected="false">Untrusted input</button>
+      <button class="tab" role="tab" id="tab-async" aria-controls="panel-async" aria-selected="false">Async</button>
+      <button class="tab" role="tab" id="tab-limits" aria-controls="panel-limits" aria-selected="false">Limits</button>
+    </div>
+
+    <div class="code" id="panel-run" role="tabpanel" aria-labelledby="tab-run">
+      <div class="code-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="name">run.py</span>
+        <button class="copy" type="button" data-copy>Copy</button>
+      </div>
+<pre><code><span class="t-kw">from</span> kryon <span class="t-kw">import</span> Runtime
+
+runtime = <span class="t-fn">Runtime</span>(encoding=<span class="t-str">"utf-8"</span>)
+result = runtime.<span class="t-fn">execute</span>(<span class="t-str">"git"</span>, [<span class="t-str">"log"</span>, <span class="t-str">"--oneline"</span>, <span class="t-str">"-5"</span>])
+
+<span class="t-fn">print</span>(result.stdout)
+<span class="t-fn">print</span>(result.exit_code, result.ok, result.duration)
+
+<span class="t-com"># A non-zero exit is information, not an exception.</span>
+changed = runtime.<span class="t-fn">execute</span>(<span class="t-str">"git"</span>, [<span class="t-str">"diff"</span>, <span class="t-str">"--quiet"</span>]).exit_code == <span class="t-num">1</span></code></pre>
+    </div>
+
+    <div class="code" id="panel-stream" role="tabpanel" aria-labelledby="tab-stream" hidden>
+      <div class="code-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="name">stream.py</span>
+        <button class="copy" type="button" data-copy>Copy</button>
+      </div>
+<pre><code><span class="t-kw">from</span> kryon <span class="t-kw">import</span> Runtime, Stream
+
+runtime = <span class="t-fn">Runtime</span>()
+
+<span class="t-com"># Output arrives as it is produced, through a bounded queue.</span>
+<span class="t-kw">with</span> runtime.<span class="t-fn">spawn</span>(<span class="t-str">"pip"</span>, [<span class="t-str">"install"</span>, <span class="t-str">"numpy"</span>]) <span class="t-kw">as</span> proc:
+    <span class="t-kw">for</span> stream, chunk <span class="t-kw">in</span> proc:
+        where = <span class="t-str">"err"</span> <span class="t-kw">if</span> stream <span class="t-kw">is</span> Stream.STDERR <span class="t-kw">else</span> <span class="t-str">"out"</span>
+        <span class="t-fn">print</span>(<span class="t-str">f"[{where}] {chunk.decode()}"</span>, end=<span class="t-str">""</span>)
+
+    result = proc.<span class="t-fn">wait</span>()
+
+<span class="t-com"># Leaving the block terminates the process. Always.</span></code></pre>
+    </div>
+
+    <div class="code" id="panel-safe" role="tabpanel" aria-labelledby="tab-safe" hidden>
+      <div class="code-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="name">safe.py</span>
+        <button class="copy" type="button" data-copy>Copy</button>
+      </div>
+<pre><code>filename = <span class="t-fn">input</span>(<span class="t-str">"file: "</span>)      <span class="t-com"># "; rm -rf ~"</span>
+
+<span class="t-com"># Safe. One literal argument. No shell is involved.</span>
+runtime.<span class="t-fn">execute</span>(<span class="t-str">"wc"</span>, [<span class="t-str">"-l"</span>, filename])
+
+<span class="t-com"># Command injection — and it is named so that it looks like one.</span>
+runtime.<span class="t-fn">execute_shell</span>(<span class="t-str">f"wc -l {filename}"</span>)
+
+<span class="t-com"># Keep your credentials out of the child process.</span>
+runtime.<span class="t-fn">execute</span>(
+    <span class="t-str">"./untrusted-build.sh"</span>,
+    clear_env=<span class="t-kw">True</span>,
+    env={<span class="t-str">"PATH"</span>: <span class="t-str">"/usr/bin:/bin"</span>, <span class="t-str">"HOME"</span>: <span class="t-str">"/tmp/build"</span>},
+)</code></pre>
+    </div>
+
+    <div class="code" id="panel-async" role="tabpanel" aria-labelledby="tab-async" hidden>
+      <div class="code-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="name">concurrent.py</span>
+        <button class="copy" type="button" data-copy>Copy</button>
+      </div>
+<pre><code><span class="t-kw">import</span> asyncio
+<span class="t-kw">from</span> kryon.aio <span class="t-kw">import</span> AsyncRuntime
+
+<span class="t-kw">async def</span> <span class="t-fn">main</span>():
+    runtime = <span class="t-fn">AsyncRuntime</span>(encoding=<span class="t-str">"utf-8"</span>)
+
+    results = <span class="t-kw">await</span> asyncio.<span class="t-fn">gather</span>(
+        runtime.<span class="t-fn">execute</span>(<span class="t-str">"git"</span>, [<span class="t-str">"rev-parse"</span>, <span class="t-str">"HEAD"</span>]),
+        runtime.<span class="t-fn">execute</span>(<span class="t-str">"git"</span>, [<span class="t-str">"status"</span>, <span class="t-str">"--porcelain"</span>]),
+    )
+
+    <span class="t-com"># Cancelling the task terminates the child before CancelledError propagates.</span>
+    task = asyncio.<span class="t-fn">create_task</span>(runtime.<span class="t-fn">execute</span>(<span class="t-str">"./forever"</span>))
+    <span class="t-kw">await</span> asyncio.<span class="t-fn">sleep</span>(<span class="t-num">1</span>)
+    task.<span class="t-fn">cancel</span>()
+
+asyncio.<span class="t-fn">run</span>(<span class="t-fn">main</span>())</code></pre>
+    </div>
+
+    <div class="code" id="panel-limits" role="tabpanel" aria-labelledby="tab-limits" hidden>
+      <div class="code-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="name">limits.py</span>
+        <button class="copy" type="button" data-copy>Copy</button>
+      </div>
+<pre><code>result = runtime.<span class="t-fn">execute</span>(
+    <span class="t-str">"./slow-thing"</span>,
+    timeout=<span class="t-num">30</span>,                  <span class="t-com"># terminate, wait kill_grace, then kill</span>
+    max_output_bytes=<span class="t-num">1</span> &lt;&lt; <span class="t-num">20</span>,     <span class="t-com"># per stream, enforced during the flood</span>
+)
+
+<span class="t-kw">if</span> result.termination.value == <span class="t-str">"TIMEOUT"</span>:
+    <span class="t-com"># Output collected before the kill is kept — it is the only</span>
+    <span class="t-com"># evidence of what the process was doing.</span>
+    <span class="t-fn">print</span>(result.stdout)
+
+<span class="t-com"># These keep YOUR process healthy. They do not contain a hostile one.</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ----------------------------------------------------------- languages -->
+<section id="languages">
+  <div class="wrap">
+    <h2>Five SDKs, one specification</h2>
+    <p class="section-lede">
+      Honest status. A row says “implemented” only when it is implemented, tested and passing
+      the shared conformance corpus.
+    </p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Language</th><th>Package</th><th>Registry</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Python</strong></td>
+            <td><code>kryon</code></td>
+            <td>PyPI</td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· not yet published</span></td>
+          </tr>
+          <tr>
+            <td>TypeScript / JavaScript</td><td><code>kryon</code></td><td>npm</td>
+            <td><span class="badge todo">Not started</span></td>
+          </tr>
+          <tr>
+            <td>Dart</td><td><code>kryon</code></td><td>pub.dev</td>
+            <td><span class="badge todo">Not started</span></td>
+          </tr>
+          <tr>
+            <td>Java</td><td><code>io.github.piyush-mishra-00:kryon</code></td><td>Maven Central</td>
+            <td><span class="badge todo">Not started</span></td>
+          </tr>
+          <tr>
+            <td>Kotlin</td><td><code>io.github.piyush-mishra-00:kryon-kotlin</code></td><td>Maven Central</td>
+            <td><span class="badge todo">Not started</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="muted" style="margin-top:1.25rem">
+      The specification is language-neutral and the corpus is one shared file, so an SDK
+      cannot quietly disagree — it either passes a case, or skips it with a reason.
+      <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/sdk-design.md">How that works</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------ security -->
+<section id="security">
+  <div class="wrap">
+    <h2>Security</h2>
+    <p class="section-lede">
+      Kryon executes arbitrary commands. That makes security a feature of the project, not a
+      section of its documentation.
+    </p>
+
+    <div class="two-col">
+      <div class="callout">
+        <h3>Kryon is not a sandbox</h3>
+        <p>
+          It runs what you tell it to run, with the privileges you already have. Its timeouts
+          and output caps are resource management — they keep <em>your</em> process healthy;
+          they do not contain a hostile one. Isolation is the job of a container, a VM or an
+          unprivileged account.
+        </p>
+        <ol>
+          <li>Never build an <code>execute_shell</code> string from untrusted input.</li>
+          <li>Never let untrusted input choose the executable.</li>
+          <li>Never expose execution to a browser without authentication, authorization, a
+            command allowlist <strong>and</strong> OS-level isolation — all four.</li>
+        </ol>
+      </div>
+
+      <div class="stack-lg">
+        <div>
+          <h3>The only correct shape for a web terminal</h3>
+          <div class="code">
+            <div class="code-head">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="name">architecture</span>
+            </div>
+<pre><code>Browser            rendering only, executes nothing
+   │               authenticated TLS WebSocket
+   ▼
+Your backend       authn · authz · allowlist · limits · audit
+   │
+   ▼
+Kryon runtime      argument vectors · timeout · output cap
+   │
+   ▼
+Container / VM     unprivileged user, destroyed after use</code></pre>
+          </div>
+          <p class="muted" style="margin-top:0.75rem">
+            Four layers, and Kryon is only the third. Anything showing the third layer alone
+            is a vulnerability with good typography.
+          </p>
+        </div>
+
+        <p>
+          <a class="btn" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/security/threat-model.md">Read the threat model</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------- roadmap -->
+<section id="roadmap">
+  <div class="wrap">
+    <h2>Roadmap</h2>
+    <p class="section-lede">
+      No dates. This is maintained by one person, and a date would be a guess presented as a
+      commitment.
+    </p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Phase</th><th>What</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>Foundation — repository, CI, docs, website</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>1</td><td>Python command execution and process streaming</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>2</td><td>Cross-language specification and conformance corpus</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>3</td><td>PTY on POSIX</td><td><span class="badge warn">Next</span></td></tr>
+          <tr><td>4</td><td>PTY on Windows (ConPTY)</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>5</td><td>TypeScript SDK</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>6</td><td>Terminal emulator</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>7–8</td><td>Dart, Java and Kotlin SDKs</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>9–10</td><td>WebSocket transport and web terminal</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>11–12</td><td>SSH adapter, production hardening</td><td><span class="badge todo">Planned</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="muted" style="margin-top:1.25rem">
+      <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/ROADMAP.md">Full roadmap</a>,
+      including what is deliberately <em>not</em> planned.
+    </p>
+  </div>
+</section>
+
+<!-- ----------------------------------------------------------- community -->
+<section id="community">
+  <div class="wrap">
+    <h2>Community</h2>
+    <p class="section-lede">
+      Kryon is early. The most valuable contribution right now is a second SDK — it is what
+      turns the specification from a document into a guarantee.
+    </p>
+
+    <div class="grid">
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/discussions">
+        <h3>Discussions</h3>
+        <p>Questions, ideas, “is this a bug?”, and proposals before they become code.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/issues">
+        <h3>Issues</h3>
+        <p>Bug reports and feature proposals, with templates that ask for what makes them actionable.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/CONTRIBUTING.md">
+        <h3>Contributing</h3>
+        <p>Setup, branching model, commit conventions, and what gets a pull request declined.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/security/advisories/new">
+        <h3>Report a vulnerability</h3>
+        <p>Privately, through GitHub security advisories. Never in a public issue.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="docs.html">Documentation</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/getting-started/first-terminal.md">Your first commands</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/overview.md">Architecture</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/tree/main/spec">Specification</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Security</h4>
+        <ul>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/security/threat-model.md">Threat model</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/security/command-execution.md">Command execution</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/security/remote-execution.md">Remote execution</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/SECURITY.md">Security policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <ul>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon">GitHub</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/ROADMAP.md">Roadmap</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/CHANGELOG.md">Changelog</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/GOVERNANCE.md">Governance</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Community</h4>
+        <ul>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/discussions">Discussions</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/issues">Issues</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fine">
+      <span>Kryon — Apache-2.0 licensed. Built by <a href="https://github.com/PIYUSH-MISHRA-00">PIYUSH-MISHRA-00</a>.</span>
+      <span class="mono">alpha · 0.1.0 · not a sandbox</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/main.js"></script>
+</body>
+</html>
