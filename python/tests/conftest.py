@@ -7,7 +7,6 @@ own temporary directory.
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
@@ -58,11 +57,3 @@ def _no_inherited_test_vars(monkeypatch):
     for name in ("KRYON_TEST_VAR", "KRYON_CONFORMANCE_INHERITED"):
         monkeypatch.delenv(name, raising=False)
     yield
-
-
-def posix_only(reason: str = "POSIX-specific behaviour"):
-    return pytest.mark.skipif(os.name == "nt", reason=reason)
-
-
-def windows_only(reason: str = "Windows-specific behaviour"):
-    return pytest.mark.skipif(os.name != "nt", reason=reason)

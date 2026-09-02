@@ -18,6 +18,9 @@ import kryon
 from kryon._core import Buffer, Reason
 from kryon.model import ExecutionOptions, ExecutionResult, TerminationReason
 
+# Plain marks, applied as `@posix_only` with no parentheses. Calling a skipif mark passes
+# its argument as a *condition string* for pytest to eval, which fails only on the platform
+# where the test actually runs -- so the mistake hides on the other one.
 posix_only = pytest.mark.skipif(os.name == "nt", reason="POSIX-specific behaviour")
 windows_only = pytest.mark.skipif(os.name != "nt", reason="Windows-specific behaviour")
 
@@ -204,7 +207,7 @@ def test_wait_timeout_leaves_the_process_running(runtime, helper):
         assert proc.running, "wait() is a wait, not a stop"
 
 
-@windows_only()
+@windows_only
 def test_signal_is_unsupported_on_windows(runtime, helper):
     with (
         runtime.spawn(helper[0], [*helper[1:], "sleep", "30"]) as proc,
@@ -213,7 +216,7 @@ def test_signal_is_unsupported_on_windows(runtime, helper):
         proc.signal(15)
 
 
-@posix_only()
+@posix_only
 def test_signal_delivers(runtime, helper):
     with runtime.spawn(helper[0], [*helper[1:], "sleep", "30"]) as proc:
         proc.signal(signal.SIGTERM)
@@ -222,7 +225,7 @@ def test_signal_delivers(runtime, helper):
         assert result.signal == signal.SIGTERM
 
 
-@posix_only("needs os.kill(pid, 0) to probe for an orphan")
+@posix_only
 def test_close_leaves_no_orphan(runtime, helper):
     proc = runtime.spawn(helper[0], [*helper[1:], "sleep", "30"])
     pid = proc.pid
@@ -231,7 +234,7 @@ def test_close_leaves_no_orphan(runtime, helper):
         os.kill(pid, 0)
 
 
-@posix_only("needs os.kill(pid, 0) to probe for an orphan")
+@posix_only
 def test_unconsumed_output_does_not_block_close(runtime, helper):
     """A process nobody read from must still close promptly.
 
@@ -260,7 +263,7 @@ async def test_async_cancellation_terminates_the_child(async_runtime, helper):
     assert time.monotonic() - started < 15, "cancellation must not wait out the process"
 
 
-@posix_only("needs os.kill(pid, 0) to probe for an orphan")
+@posix_only
 async def test_async_close_leaves_no_orphan(async_runtime, helper):
     proc = await async_runtime.spawn(helper[0], [*helper[1:], "sleep", "30"])
     pid = proc.pid
