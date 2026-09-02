@@ -18,7 +18,7 @@ jobs:
     name: Repository checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Conformance corpus is valid
         run: python scripts/check_corpus.py
@@ -48,9 +48,9 @@ jobs:
       run:
         working-directory: python
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
 
@@ -78,9 +78,9 @@ jobs:
       run:
         working-directory: python
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
 
@@ -101,7 +101,7 @@ jobs:
           print('wheel works:', kryon.__version__)
           "
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: python-dist
           path: python/dist/
@@ -110,7 +110,7 @@ jobs:
     name: Website
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check the site
         run: python scripts/check_website.py
 
@@ -118,7 +118,7 @@ jobs:
     name: SDK status
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Report which SDKs are implemented
         run: |
           echo "### SDK implementation status" >> "$GITHUB_STEP_SUMMARY"
