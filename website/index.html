@@ -389,12 +389,12 @@ asyncio.<span class="t-fn">run</span>(<span class="t-fn">main</span>())</code></
             <td><span class="badge done">Implemented</span> <span class="muted">· published</span></td>
           </tr>
           <tr>
-            <td>TypeScript / JavaScript</td><td><code>kryon</code></td><td>npm</td>
-            <td><span class="badge done">Implemented</span> <span class="muted">· awaiting credentials</span></td>
+            <td>TypeScript / JavaScript</td><td><code>kryon-exec</code></td><td>npm</td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· published</span></td>
           </tr>
           <tr>
             <td>Dart</td><td><code>kryon</code></td><td>pub.dev</td>
-            <td><span class="badge done">Implemented</span> <span class="muted">· awaiting credentials</span></td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· published</span></td>
           </tr>
           <tr>
             <td>Java</td><td><code>io.github.piyush-mishra-00:kryon</code></td><td>Maven Central</td>
@@ -409,8 +409,10 @@ asyncio.<span class="t-fn">run</span>(<span class="t-fn">main</span>())</code></
     </div>
 
     <p class="muted" style="margin-top:1.25rem">
-      “Awaiting credentials” means the package builds, tests and validates and the release
-      workflow is configured — the registry account is a manual step, not unfinished code.
+      Python, TypeScript and Dart are published. The two JVM artifacts build, test and
+      validate and the release workflow is configured — Maven Central is a manual step, not
+      unfinished code. On npm the package is <code>kryon-exec</code>, because the registry
+      refuses <code>kryon</code> as too similar to <code>cron</code>.
       The specification is language-neutral and the corpus is one shared file, so an SDK
       cannot quietly disagree: it either passes a case, or skips it with a reason.
       <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/sdk-design.md">How that works</a>.

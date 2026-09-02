@@ -5,7 +5,7 @@
 Run operating-system commands, stream their output, and manage the processes behind them —
 with an API designed so the dangerous thing is the one you have to ask for by name.
 
-[![npm](https://img.shields.io/badge/npm-kryon-cb3837.svg)](https://www.npmjs.com/package/kryon)
+[![npm](https://img.shields.io/npm/v/kryon-exec.svg)](https://www.npmjs.com/package/kryon-exec)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A520-339933.svg)](package.json)
 
@@ -19,15 +19,20 @@ This is the TypeScript/JavaScript SDK of [Kryon](https://github.com/PIYUSH-MISHR
 ## Install
 
 ```bash
-npm install kryon
+npm install kryon-exec
 ```
+
+> **On the name.** The npm registry refuses `kryon` as too similar to the existing
+> `cron` package -- a typosquatting filter rather than a name clash. The package is
+> `kryon-exec` here; it is `kryon` on PyPI and pub.dev. Same project, same version, same
+> conformance corpus.
 
 Requires Node 20 or newer.
 
 ## Run something
 
 ```ts
-import { Runtime } from "kryon";
+import { Runtime } from "kryon-exec";
 
 const runtime = new Runtime({ encoding: "utf8", timeout: 30_000 });
 
@@ -40,7 +45,7 @@ console.log(result.exitCode, result.termination, result.duration);
 ## Talk to something
 
 ```ts
-import { Runtime, Stream } from "kryon";
+import { Runtime, Stream } from "kryon-exec";
 
 const proc = await runtime.spawn("npm", ["install"]);
 try {
@@ -139,7 +144,7 @@ the caller's own doing. All descend from `KryonError`.
 ## Browsers
 
 ```ts
-import { TerminationReason, isOk } from "kryon/browser";
+import { TerminationReason, isOk } from "kryon-exec/browser";
 ```
 
 A browser cannot execute host operating-system commands — that is what a browser is, not a gap
