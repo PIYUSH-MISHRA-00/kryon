@@ -55,8 +55,8 @@
     "prepublishOnly": "npm run clean && npm run build && node --test test/api.test.mjs test/conformance.test.mjs"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
-    "typescript": "^5.7.0"
+    "@types/node": "^26.4.0",
+    "typescript": "^7.0.2"
   },
   "publishConfig": {
     "access": "public",
