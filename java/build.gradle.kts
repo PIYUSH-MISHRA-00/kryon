@@ -24,12 +24,12 @@ dependencies {
     // process facilities correctly; adding a dependency to do that would be
     // adding supply-chain risk to a library that already runs arbitrary
     // programs.
-    testImplementation(platform("org.junit:junit-bom:5.11.3"))
+    testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Test-only. The published artifact still has no dependencies; a JSON parser
     // written by hand here would be more code than the runner it serves.
-    testImplementation("com.google.code.gson:gson:2.11.0")
+    testImplementation("com.google.code.gson:gson:2.14.0")
 }
 
 tasks.withType<JavaCompile>().configureEach {
