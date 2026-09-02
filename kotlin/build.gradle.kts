@@ -123,7 +123,15 @@ publishing {
 }
 
 signing {
-    val key = providers.environmentVariable("SIGNING_KEY").orNull
+    // Signing is required by Maven Central and irrelevant everywhere else, so it
+    // activates only when a key is actually supplied. A build that silently produced
+    // unsigned artifacts and called them releasable would be worse than one that fails.
+    //
+    // `isNotBlank`, not `!= null`: GitHub Actions sets an undefined secret to the empty
+    // string rather than leaving the variable unset, so a null check treats "no signing
+    // key configured" as "signing key configured, and it is empty" -- which fails with
+    // "Could not read PGP secret key" instead of skipping.
+    val key = providers.environmentVariable("SIGNING_KEY").orNull?.takeIf { it.isNotBlank() }
     val password = providers.environmentVariable("SIGNING_PASSWORD").orNull
     isRequired = key != null
     if (key != null) {
