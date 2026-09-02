@@ -10,14 +10,14 @@ All five SDKs implement the same execution API and pass the same
 | Python | `kryon` | PyPI | ✅ | ✅ |
 | TypeScript / JavaScript | `kryon-exec` | npm | ✅ | ✅ |
 | Dart | `kryon` | pub.dev | ✅ | ✅ |
-| Java | `io.github.piyush-mishra-00:kryon` | Maven Central | ✅ | Pending upload |
-| Kotlin | `io.github.piyush-mishra-00:kryon-kotlin` | Maven Central | ✅ | Pending upload |
+| Java | `io.github.piyush-mishra-00:kryon` | Maven Central | ✅ | ✅ |
+| Kotlin | `io.github.piyush-mishra-00:kryon-kotlin` | Maven Central | ✅ | ✅ |
 
-"Pending upload" means the package builds, tests, validates and is GPG-signed, and the release
-workflow is configured — the upload to Maven Central is a manual step that has not happened yet.
-It does **not** mean the code is unfinished. In the meantime the JVM jars are attached to the
-[v1.0.0 GitHub release](https://github.com/PIYUSH-MISHRA-00/kryon/releases/tag/v1.0.0). See
-[releases](../development/releases.md) for exactly what remains.
+All five are published at 1.0.0. The two Maven Central artifacts are GPG-signed with key
+`704CD5A4984CD865`, published to keyserver.ubuntu.com and keys.openpgp.org; every `.jar`,
+`.pom`, sources and javadoc has a `.asc` beside it in the repository, so you can verify the
+download rather than take this table's word for it. See
+[releases](../development/releases.md) for how publishing works.
 
 ## Python
 
