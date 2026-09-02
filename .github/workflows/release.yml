@@ -4,6 +4,12 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      target:
+        description: "Which registry to publish (a tag push always publishes all)"
+        type: choice
+        default: maven-central
+        options: [all, pypi, npm, pub-dev, maven-central]
 
 permissions:
   contents: read
@@ -127,6 +133,7 @@ jobs:
   # credentials live rather than in this file.
 
   publish-pypi:
+    if: github.ref_type == 'tag' || inputs.target == 'all' || inputs.target == 'pypi'
     name: Publish to PyPI
     needs: build
     runs-on: ubuntu-latest
@@ -148,6 +155,7 @@ jobs:
           print-hash: true
 
   publish-npm:
+    if: github.ref_type == 'tag' || inputs.target == 'all' || inputs.target == 'npm'
     name: Publish to npm
     needs: build
     runs-on: ubuntu-latest
@@ -178,6 +186,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-pub:
+    if: github.ref_type == 'tag' || inputs.target == 'all' || inputs.target == 'pub-dev'
     name: Publish to pub.dev
     needs: build
     runs-on: ubuntu-latest
@@ -203,6 +212,7 @@ jobs:
         run: cd dart && dart pub publish --force
 
   publish-maven:
+    if: github.ref_type == 'tag' || inputs.target == 'all' || inputs.target == 'maven-central'
     name: Publish to Maven Central
     needs: build
     runs-on: ubuntu-latest
@@ -221,6 +231,16 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check the shape of the signing secrets
+        run: python scripts/check_signing_secret.py
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
       - name: Build, sign and stage
         run: cd ${{ matrix.sdk }} && ./gradlew publishAllPublicationsToStagingRepository --no-daemon
@@ -259,6 +279,7 @@ jobs:
 
   # ---------------------------------------------------------------- release
   github-release:
+    if: github.ref_type == 'tag'
     name: GitHub release
     needs: build
     runs-on: ubuntu-latest
