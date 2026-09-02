@@ -13,7 +13,7 @@ This is the TypeScript/JavaScript SDK of [Kryon](https://github.com/PIYUSH-MISHR
 **Zero runtime dependencies.** Written in TypeScript, shipped with declarations, ESM-only.
 
 > **`1.0.0`.** Command execution and process streaming are implemented and pass the
-> [cross-language conformance corpus](../tests/conformance/cases.json) on Linux, macOS and
+> [cross-language conformance corpus](tests/conformance/cases.json) on Linux, macOS and
 > Windows. PTY, terminal emulation and remote transports are specified but **not implemented**.
 
 ## Install
@@ -88,7 +88,7 @@ dozen options is easy to set by accident and easy to miss in review.
 Timeouts and output caps manage resources. They do not contain a hostile program: a process
 that ignores `SIGTERM` runs until the kill lands, and anything it did before that is done.
 Isolation is a container, a VM, or an unprivileged account. See
-[the threat model](../docs/security/threat-model.md).
+[the threat model](docs/security/threat-model.md).
 
 ## API
 
@@ -153,7 +153,7 @@ runtime**; the `exports` map enforces it, so a bundler cannot pull `node:child_p
 web bundle by accident.
 
 Building a browser terminal means executing on an authenticated backend and carrying the session
-over a transport. Read [remote execution](../docs/security/remote-execution.md) first — the
+over a transport. Read [remote execution](docs/security/remote-execution.md) first — the
 version that is easy to deploy is the version that ends up in an incident report.
 
 ## Platform notes
@@ -179,7 +179,7 @@ npm run typecheck
 ```
 
 Tests use Node's built-in runner — no test framework dependency. They drive a small
-[helper program](test/helper.mjs) rather than real system commands, so they behave the same on
+[helper program](javascript/test/helper.mjs) rather than real system commands, so they behave the same on
 every platform and touch nothing outside a temporary directory.
 
 ## License
