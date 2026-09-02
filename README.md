@@ -13,7 +13,7 @@ This is the Java SDK of [Kryon](https://github.com/PIYUSH-MISHRA-00/kryon). **Ze
 dependencies** — it orchestrates the JDK's own `ProcessBuilder` and nothing else.
 
 > **`1.0.0`.** Command execution and process streaming are implemented and pass the
-> [cross-language conformance corpus](../tests/conformance/cases.json) on Linux, macOS and
+> [cross-language conformance corpus](tests/conformance/cases.json) on Linux, macOS and
 > Windows. PTY, terminal emulation and remote transports are specified but **not implemented**.
 
 ## Install
@@ -98,7 +98,7 @@ and has surprised generations of Java developers.
 
 Timeouts and output caps manage resources. They do not contain a hostile program. Isolation is a
 container, a VM, or an unprivileged account. See
-[the threat model](../docs/security/threat-model.md).
+[the threat model](docs/security/threat-model.md).
 
 ## API
 
@@ -185,7 +185,7 @@ cd java
 ```
 
 The compiler runs with `-Xlint:all -Werror`, so a warning fails the build. Tests drive a small
-[helper program](src/test/java/io/github/piyushmishra00/kryon/ConformanceHelper.java) rather than
+[helper program](java/src/test/java/io/github/piyushmishra00/kryon/ConformanceHelper.java) rather than
 real system commands, so they behave the same on every platform.
 
 ## License
