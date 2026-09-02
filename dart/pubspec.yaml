@@ -1,0 +1,27 @@
+name: kryon
+version: 1.0.0
+description: >-
+  Powerful terminal execution, everywhere. Command execution, process control
+  and streaming, with one conceptual API across languages.
+repository: https://github.com/PIYUSH-MISHRA-00/kryon
+homepage: https://piyush-mishra-00.github.io/kryon/
+issue_tracker: https://github.com/PIYUSH-MISHRA-00/kryon/issues
+documentation: https://github.com/PIYUSH-MISHRA-00/kryon/tree/main/docs
+topics:
+  - terminal
+  - subprocess
+  - process
+  - shell
+  - cli
+
+environment:
+  sdk: ^3.0.0
+
+# Zero runtime dependencies. Kryon's job is to orchestrate dart:io's process
+# facilities correctly; adding a dependency to do that would be adding a
+# supply-chain risk to a package that already runs arbitrary programs.
+dependencies:
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0
