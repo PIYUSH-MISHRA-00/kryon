@@ -1,6 +1,6 @@
 # Process Specification
 
-**Status:** Draft — `0.1`
+**Status:** `1.0` — implemented and verified by five SDKs
 
 Defines long-lived processes: streaming output, writing input, sending signals, and
 lifecycle management. Where [`execution.md`](execution.md) covers "run this and tell me what

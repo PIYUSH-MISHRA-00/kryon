@@ -1,6 +1,6 @@
 # Transport Specification
 
-**Status:** Design — `0.1` · **Not implemented in any SDK**
+**Status:** Design · **Not implemented in any SDK** · targeted for `1.x`
 
 Defines how a Kryon session can run somewhere other than the local machine. This document
 is a design under review; no transport other than the implicit local one exists today.

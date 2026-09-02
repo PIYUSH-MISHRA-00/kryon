@@ -1,6 +1,6 @@
 # Execution Specification
 
-**Status:** Draft — `0.1`
+**Status:** `1.0` — implemented and verified by five SDKs
 
 Defines one-shot command execution: run a program to completion, collect its output, get a
 result. This is the smallest useful unit of Kryon and the first thing every SDK implements.

@@ -1,6 +1,6 @@
 # Error Specification
 
-**Status:** Draft — `0.1`
+**Status:** `1.0` — implemented and verified by five SDKs
 
 Defines Kryon's error taxonomy and, more importantly, the rule for *which* failures are
 errors at all.

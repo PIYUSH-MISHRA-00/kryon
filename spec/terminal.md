@@ -1,6 +1,6 @@
 # Terminal Specification
 
-**Status:** Design — `0.1` · **Not implemented in any SDK**
+**Status:** Design · **Not implemented in any SDK** · targeted for `1.x`
 
 This document records the intended model for PTY sessions and terminal emulation. It is a
 design under review, not a contract anything currently satisfies. It is published now so

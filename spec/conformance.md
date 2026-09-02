@@ -1,6 +1,6 @@
 # Conformance Specification
 
-**Status:** Draft — `0.1`
+**Status:** `1.0` — run by five SDKs
 
 Defines the shared test corpus that every Kryon SDK must pass, and the mechanism that makes
 one corpus runnable from five languages.
@@ -74,13 +74,43 @@ everywhere, and it is cheap.
 | `stdin` | Text written to the child's stdin, where applicable. |
 | `expect` | Assertions. Absent keys are not asserted. |
 | `platforms` | Optional allowlist: `posix`, `windows`. Omitted means all. |
+| `setup_env` | Variables that must be present in the **runner's own** environment. See §3.2. |
+| `executable` | Opts out of the helper, for cases about a command that cannot be run at all. |
+| `shell_command` | Per-platform command line for an `execute_shell` case. |
 | `why` | Prose stating what would break in the real world if this case regressed. |
 
 `expect` supports `exit_code`, `signal_present`, `termination`, `ok`, `stdout`,
-`stdout_contains`, `stdout_bytes_at_most`, `stderr`, `stderr_contains`, `stdout_truncated`,
-`duration_at_most`, `duration_at_least`, and `raises`.
+`stdout_contains`, `stdout_contains_last`, `stdout_bytes_at_most`, `stdout_is_bytes`,
+`stdout_contains_bytes`, `stdout_is_dir`, `stderr`, `stderr_contains`, `stdout_truncated`,
+`duration_at_most`, `duration_at_least`, `raises`, `streamed_chunks_at_least`,
+`running_after_terminate` and `running_after_scope`.
 
-### 3.1 Coverage requirements
+### 3.1 Units
+
+Durations in `options` (`timeout`, `kill_grace`) and in `expect` (`duration_at_most`,
+`duration_at_least`) are **seconds**, expressed as JSON numbers.
+
+Seconds are the corpus's unit, not any SDK's. Each runner converts to whatever its ecosystem
+uses -- milliseconds in TypeScript, `Duration` in Dart, Java and Kotlin, seconds in Python. That
+conversion is exactly the kind of difference a runner is expected to absorb: the specification
+fixes semantics, and a duration is a duration however it is spelled.
+
+### 3.2 `setup_env` and what a runner cannot do
+
+A case with `setup_env` asserts something about the environment the runner *itself* is running
+in -- `execute.env.inherited` needs a variable set in the parent so it can prove the child
+inherits it.
+
+Python and JavaScript can set their own process environment at runtime, so their runners do it
+directly. Dart and the JVM cannot. Those runners **MUST** check whether the variable is already
+present and, if not, report the case as skipped with a reason naming the variable -- never
+silently pass it through `env`, which would quietly convert a test about *inheritance* into a
+test about *merging*, and leave a green tick over an untested behaviour.
+
+CI supplies these variables for every SDK, so the cases run everywhere in the build that
+matters.
+
+### 3.3 Coverage requirements
 
 The corpus **MUST** cover, at minimum:
 
@@ -98,7 +128,7 @@ The corpus **MUST** cover, at minimum:
 - **Lifecycle** — terminate, kill, wait, scope exit terminates a running process.
 - **Shell** — `execute_shell` interprets, `execute` does not.
 
-### 3.2 Platform differences
+### 3.4 Platform differences
 
 Where behaviour legitimately differs, the case is restricted with `platforms` and a matching
 case is added for the other platform. Differences **MUST NOT** be handled by loosening an
@@ -113,11 +143,14 @@ its own implementation:
 
 | SDK | Command | Status |
 |---|---|---|
-| Python | `pytest tests/test_conformance.py` | Running |
-| TypeScript | not yet | Not implemented |
-| Dart | not yet | Not implemented |
-| Java | not yet | Not implemented |
-| Kotlin | not yet | Not implemented |
+| Python | `cd python && pytest` | Running, sync **and** async |
+| TypeScript | `cd javascript && npm test` | Running |
+| Dart | `cd dart && dart test` | Running |
+| Java | `cd java && ./gradlew test` | Running |
+| Kotlin | `cd kotlin && ./gradlew test` | Running |
+
+Python runs every case twice -- once through `Runtime`, once through `AsyncRuntime` -- because
+"the async one has the same semantics" is a claim, and claims get tested.
 
 Every case **MUST** be attempted. An SDK that cannot yet satisfy a case **MUST** report it as
 skipped with a reason, never silently drop it from the corpus. The count of skipped cases is
