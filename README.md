@@ -27,8 +27,13 @@ with one conceptual API across Python, TypeScript, Dart, Java and Kotlin.
 > `1.x` work — see the [roadmap](ROADMAP.md). Nothing in this README describes a feature that does
 > not exist; where something is planned, it says so.
 >
-> Python is published to PyPI. The other four are built, tested and awaiting registry
-> credentials — the [status table](#install) says exactly where each one stands.
+> **Python, TypeScript and Dart are published.** The two JVM artifacts are built, tested and
+> awaiting Maven Central credentials — the [status table](#install) says exactly where each
+> one stands.
+>
+> On npm the package is **`kryon-exec`**: the registry refuses `kryon` as too similar to the
+> existing `cron` package. That is a typosquatting filter, not a name clash — nobody holds
+> `kryon` there, and nobody can publish it.
 
 ## What it does
 
@@ -183,8 +188,8 @@ recorded CI log into a rendered screen needs the emulator and nothing else.
 | Ecosystem | Install | Status |
 |---|---|---|
 | **Python** | `pip install kryon` | ✅ **Published to PyPI** |
-| **TypeScript** | `npm install kryon` | ✅ Implemented · awaiting npm credentials |
-| **Dart** | `dart pub add kryon` | ✅ Implemented · awaiting pub.dev credentials |
+| **TypeScript** | `npm install kryon-exec` | ✅ **Published to npm** |
+| **Dart** | `dart pub add kryon` | ✅ **Published to pub.dev** |
 | **Java** | `io.github.piyush-mishra-00:kryon:1.0.0` | ✅ Implemented · awaiting Maven Central credentials |
 | **Kotlin** | `io.github.piyush-mishra-00:kryon-kotlin:1.0.0` | ✅ Implemented · awaiting Maven Central credentials |
 

@@ -58,8 +58,8 @@ a human approving it, and the credentials live there rather than in the workflow
 | Registry | Package | Credential | Status |
 |---|---|---|---|
 | PyPI | `kryon` | Trusted Publishing (OIDC) | ✅ Configured and published |
-| npm | `kryon` | `NPM_TOKEN`, or Trusted Publishing | **Not configured** |
-| pub.dev | `kryon` | OIDC, after a manual first publish | **Not configured** |
+| npm | `kryon-exec` | `NPM_TOKEN`, or Trusted Publishing | ✅ Published |
+| pub.dev | `kryon` | OIDC, after a manual first publish | ✅ Published |
 | Maven Central | `io.github.piyush-mishra-00:kryon` | Portal token + GPG key | **Not configured** |
 | Maven Central | `…:kryon-kotlin` | Same | **Not configured** |
 
