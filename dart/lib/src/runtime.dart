@@ -473,17 +473,35 @@ Future<io.Process> _start(
   required bool shell,
 }) async {
   final environment = _buildEnv(options);
+
+  // Spelled out rather than using `runInShell`. dart:io's flag is designed for
+  // `Process.start('ls', ['-l'], runInShell: true)` and quotes the executable
+  // before handing it to the shell, so a raw command line comes back as exit
+  // 127 -- the shell looks for a program literally named `exit 5`. Building the
+  // invocation here also makes the shell Kryon uses visible in the source,
+  // which spec/execution.md requires it to document.
+  final resolved = shell
+      ? (_windows
+          ? [
+              io.Platform.environment['COMSPEC'] ?? 'cmd.exe',
+              '/d',
+              '/s',
+              '/c',
+              executable
+            ]
+          : ['/bin/sh', '-c', executable])
+      : [executable, ...arguments];
+
   try {
     return await io.Process.start(
-      executable,
-      arguments,
+      resolved.first,
+      resolved.sublist(1),
       workingDirectory: options.cwd,
       environment: environment,
       // When we hand over an explicit map we have already merged the parent
       // environment into it ourselves. Letting dart:io add the parent again
       // would silently resurrect every variable the caller asked to remove.
       includeParentEnvironment: environment == null,
-      runInShell: shell,
     );
   } on io.ProcessException catch (error) {
     throw _mapStartError(error, executable);

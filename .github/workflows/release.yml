@@ -94,7 +94,7 @@ jobs:
           npm install
           npm run typecheck
           npm run build
-          node --test "test/**/*.test.mjs"
+          node --test test/api.test.mjs test/conformance.test.mjs
           npm pack
 
       - name: Dart
@@ -164,7 +164,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Build from source rather than trusting an artifact
-        run: cd javascript && npm install && npm run build && node --test "test/**/*.test.mjs"
+        run: cd javascript && npm install && npm run build && node --test test/api.test.mjs test/conformance.test.mjs
 
       # `--provenance` attaches a signed attestation linking the tarball to this commit and
       # workflow, so anyone can verify where the package came from.

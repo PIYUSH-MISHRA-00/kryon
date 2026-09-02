@@ -73,7 +73,7 @@ if have npm && have node; then
   if [ -d javascript/node_modules ]; then
     run "typescript: types"  sh -c "cd javascript && npm run --silent typecheck"
     run "typescript: build"  sh -c "cd javascript && npm run --silent build"
-    run "typescript: tests"  sh -c "cd javascript && node --test 'test/**/*.test.mjs'"
+    run "typescript: tests"  sh -c "cd javascript && node --test test/api.test.mjs test/conformance.test.mjs"
   else
     skip_it "typescript" "dependencies not installed — run: cd javascript && npm install"
   fi

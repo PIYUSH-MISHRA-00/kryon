@@ -114,7 +114,9 @@ jobs:
         run: npm run build
 
       - name: Test
-        run: node --test "test/**/*.test.mjs"
+        # Explicit files rather than a glob: Node 20's --test does not expand one,
+        # and the pattern reaches it as a literal path that does not exist.
+        run: node --test test/api.test.mjs test/conformance.test.mjs
 
   dart:
     name: Dart on ${{ matrix.os }}
