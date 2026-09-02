@@ -13,7 +13,7 @@ This is the Dart SDK of [Kryon](https://github.com/PIYUSH-MISHRA-00/kryon). **Ze
 dependencies** — it orchestrates `dart:io` and nothing else.
 
 > **`1.0.0`.** Command execution and process streaming are implemented and pass the
-> [cross-language conformance corpus](../tests/conformance/cases.json) on Linux, macOS and
+> [cross-language conformance corpus](tests/conformance/cases.json) on Linux, macOS and
 > Windows. PTY, terminal emulation and remote transports are specified but **not implemented**.
 
 ## Install
@@ -84,7 +84,7 @@ is easy to set by accident and easy to miss in review.
 
 Timeouts and output caps manage resources. They do not contain a hostile program. Isolation is a
 container, a VM, or an unprivileged account. See
-[the threat model](../docs/security/threat-model.md).
+[the threat model](docs/security/threat-model.md).
 
 ## API
 
@@ -167,7 +167,7 @@ dart test
 dart run example/kryon_example.dart
 ```
 
-Tests drive a small [helper program](test/helper.dart) rather than real system commands, so they
+Tests drive a small [helper program](dart/test/helper.dart) rather than real system commands, so they
 behave the same on every platform and touch nothing outside a temporary directory.
 
 ## License
