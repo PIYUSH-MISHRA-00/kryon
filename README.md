@@ -14,7 +14,7 @@ This is the Kotlin SDK of [Kryon](https://github.com/PIYUSH-MISHRA-00/kryon). It
 Kotlin implementation, not a wrapper over the Java SDK.
 
 > **`1.0.0`.** Command execution and process streaming are implemented and pass the
-> [cross-language conformance corpus](../tests/conformance/cases.json) on Linux, macOS and
+> [cross-language conformance corpus](tests/conformance/cases.json) on Linux, macOS and
 > Windows. PTY, terminal emulation and remote transports are specified but **not implemented**.
 
 ## Install
@@ -88,7 +88,7 @@ arguments is easy to set by accident and easy to miss in review.
 
 Timeouts and output caps manage resources. They do not contain a hostile program. Isolation is a
 container, a VM, or an unprivileged account. See
-[the threat model](../docs/security/threat-model.md).
+[the threat model](docs/security/threat-model.md).
 
 ## API
 
