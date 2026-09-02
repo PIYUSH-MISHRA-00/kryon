@@ -1,8 +1,9 @@
 version: 2
 
-# Kryon's Python package has zero runtime dependencies, so the surface here is deliberately
-# small: GitHub Actions, and the development tooling. That is the point — there is very
-# little to keep current, and nothing in the supply chain of a published wheel.
+# Kryon's published packages carry almost no dependencies -- Python, TypeScript, Dart and
+# Java have none at all, and Kotlin has exactly one. The surface here is therefore mostly
+# development tooling and GitHub Actions, which is the point: there is very little to keep
+# current, and nothing in the supply chain of a published artifact except coroutines.
 
 updates:
   - package-ecosystem: github-actions
@@ -25,6 +26,54 @@ updates:
     commit-message:
       prefix: "build"
     labels: ["dependencies", "python"]
+    groups:
+      dev-tooling:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /javascript
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "build"
+    labels: ["dependencies", "javascript"]
+    groups:
+      dev-tooling:
+        patterns: ["*"]
+
+  - package-ecosystem: pub
+    directory: /dart
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "build"
+    labels: ["dependencies", "dart"]
+    groups:
+      dev-tooling:
+        patterns: ["*"]
+
+  - package-ecosystem: gradle
+    directory: /java
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "build"
+    labels: ["dependencies", "java"]
+    groups:
+      dev-tooling:
+        patterns: ["*"]
+
+  - package-ecosystem: gradle
+    directory: /kotlin
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "build"
+    labels: ["dependencies", "kotlin"]
     groups:
       dev-tooling:
         patterns: ["*"]

@@ -13,6 +13,13 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Two conformance cases assert that a child inherits a variable from its parent. Dart and
+  # the JVM cannot set their own process environment, so their runners skip those cases with
+  # a reason unless it is already present. Setting it here is what makes them run in CI.
+  # See spec/conformance.md §3.2.
+  KRYON_CONFORMANCE_INHERITED: from-parent
+
 jobs:
   repository:
     name: Repository checks
@@ -28,6 +35,9 @@ jobs:
 
       - name: Documentation links resolve
         run: python scripts/check_links.py
+
+      - name: Versions agree across every package
+        run: python scripts/check_versions.py
 
   python:
     name: Python ${{ matrix.python }} on ${{ matrix.os }}
@@ -71,29 +81,139 @@ jobs:
       - name: Test
         run: python -m pytest -ra
 
-  python-package:
-    name: Python package
-    runs-on: ubuntu-latest
+  typescript:
+    name: TypeScript Node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: ["20", "24"]
+        exclude:
+          - { os: macos-latest, node: "20" }
+          - { os: windows-latest, node: "20" }
+        include:
+          - { os: ubuntu-latest, node: "22" }
     defaults:
       run:
-        working-directory: python
+        working-directory: javascript
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install
+        run: npm install
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: node --test "test/**/*.test.mjs"
+
+  dart:
+    name: Dart on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: dart
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install
+        run: dart pub get
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Format
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Test
+        run: dart test --timeout 120s
+
+      - name: Package validation
+        run: dart pub publish --dry-run
+        if: matrix.os == 'ubuntu-latest'
+
+  jvm:
+    name: ${{ matrix.sdk }} JDK ${{ matrix.java }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: [java, kotlin]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        java: ["21"]
+        include:
+          - { sdk: java, os: ubuntu-latest, java: "17" }
+          - { sdk: kotlin, os: ubuntu-latest, java: "17" }
+    defaults:
+      run:
+        working-directory: ${{ matrix.sdk }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build and test
+        run: ./gradlew build --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: ${{ matrix.sdk }}-test-report-${{ matrix.os }}-${{ matrix.java }}
+          path: ${{ matrix.sdk }}/build/reports/tests/
+
+  packages:
+    name: Package builds
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
 
-      - name: Build
-        run: python -m pip install build twine && python -m build
+      - name: Python — build and validate
+        run: |
+          cd python
+          python -m pip install build twine
+          python -m build
+          python -m twine check dist/*
 
-      - name: Validate metadata
-        run: python -m twine check dist/*
-
-      - name: Install the wheel into a clean environment and use it
+      - name: Python — install the wheel into a clean environment and use it
         run: |
           python -m venv /tmp/clean
-          /tmp/clean/bin/pip install dist/*.whl
+          /tmp/clean/bin/pip install python/dist/*.whl
           /tmp/clean/bin/python -c "
           import kryon
           r = kryon.Runtime(encoding='utf-8').execute('python', ['-c', 'print(\"installed ok\")'])
@@ -101,10 +221,38 @@ jobs:
           print('wheel works:', kryon.__version__)
           "
 
+      - name: TypeScript — pack and inspect
+        run: |
+          cd javascript
+          npm install
+          npm run build
+          npm pack --dry-run
+          node -e "
+          const { execSync } = require('node:child_process');
+          const files = JSON.parse(execSync('npm pack --json --dry-run'))[0].files.map(f => f.path);
+          const required = ['dist/index.js', 'dist/index.d.ts', 'dist/browser.js', 'README.md', 'LICENSE'];
+          const missing = required.filter(f => !files.includes(f));
+          if (missing.length) { console.error('missing from the tarball:', missing); process.exit(1); }
+          if (files.some(f => f.startsWith('src/'))) { console.error('source leaked into the tarball'); process.exit(1); }
+          console.log('tarball contains', files.length, 'files');
+          "
+
+      - name: Dart — validate
+        run: cd dart && dart pub get && dart pub publish --dry-run
+
+      - name: Java — build publishable artifacts
+        run: cd java && ./gradlew publishAllPublicationsToStagingRepository --no-daemon
+
+      - name: Kotlin — build publishable artifacts
+        run: cd kotlin && ./gradlew publishAllPublicationsToStagingRepository --no-daemon
+
       - uses: actions/upload-artifact@v4
         with:
-          name: python-dist
-          path: python/dist/
+          name: dist
+          path: |
+            python/dist/
+            java/build/staging-deploy/
+            kotlin/build/staging-deploy/
 
   website:
     name: Website
@@ -114,24 +262,35 @@ jobs:
       - name: Check the site
         run: python scripts/check_website.py
 
-  sdk-status:
-    name: SDK status
+  conformance-summary:
+    name: Conformance summary
     runs-on: ubuntu-latest
+    needs: [python, typescript, dart, jvm]
+    if: always()
     steps:
       - uses: actions/checkout@v4
-      - name: Report which SDKs are implemented
+      - name: Report which SDKs ran the corpus
         run: |
-          echo "### SDK implementation status" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| SDK | Status |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
-          for sdk in python javascript dart java kotlin; do
-            if [ -d "$sdk" ]; then
-              echo "| $sdk | implemented — tested in this run |" >> "$GITHUB_STEP_SUMMARY"
-            else
-              echo "| $sdk | **not implemented** — nothing was tested |" >> "$GITHUB_STEP_SUMMARY"
-            fi
-          done
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "A missing SDK reports as not implemented rather than passing vacuously." >> "$GITHUB_STEP_SUMMARY"
-          echo "A green check that means 'we tested nothing' is worse than a missing check." >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "### Conformance"
+            echo
+            echo "Every SDK below ran the same corpus from \`tests/conformance/cases.json\`."
+            echo
+            echo "| SDK | Result |"
+            echo "|---|---|"
+            echo "| Python | ${{ needs.python.result }} |"
+            echo "| TypeScript | ${{ needs.typescript.result }} |"
+            echo "| Dart | ${{ needs.dart.result }} |"
+            echo "| Java + Kotlin | ${{ needs.jvm.result }} |"
+            echo
+            echo "A case an SDK cannot satisfy is skipped **with a reason**, never dropped."
+            echo "PTY, terminal emulation and transports are specified and not implemented in any SDK."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ needs.python.result }}" != "success" ] \
+            || [ "${{ needs.typescript.result }}" != "success" ] \
+            || [ "${{ needs.dart.result }}" != "success" ] \
+            || [ "${{ needs.jvm.result }}" != "success" ]; then
+            echo "::error::at least one SDK failed the conformance corpus"
+            exit 1
+          fi
