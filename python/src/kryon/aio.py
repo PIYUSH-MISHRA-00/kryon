@@ -105,8 +105,18 @@ class AsyncRuntime:
             await _stop(proc, opts.kill_grace)
             raise
         finally:
-            # Bounded, because a grandchild can hold the pipes open after the child dies.
-            for worker in workers:
+            # `proc.wait()` returns the moment the child exits, which says nothing about
+            # whether its output has been read. Anything still sitting in the pipe is only
+            # reachable through the drains, so they get a chance to reach EOF before being
+            # cancelled -- cancelling first discards that output and returns empty stdout
+            # for a command that plainly wrote to it.
+            #
+            # Bounded, and for the same reason the sync runtime bounds its join: a
+            # grandchild can hold the pipes open after the child dies, so EOF may never
+            # come, and `sh -c "sleep 100 &"` would otherwise hang the caller. Same bound
+            # as the sync path, because these are the same trade-off.
+            _, pending = await asyncio.wait(workers, timeout=max(opts.kill_grace, 1.0))
+            for worker in pending:
                 worker.cancel()
             await asyncio.gather(*workers, return_exceptions=True)
 
