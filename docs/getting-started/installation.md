@@ -8,8 +8,8 @@ All five SDKs implement the same execution API and pass the same
 | Ecosystem | Package | Registry | Implemented | Published |
 |---|---|---|---|---|
 | Python | `kryon` | PyPI | ✅ | ✅ |
-| TypeScript / JavaScript | `kryon` | npm | ✅ | Awaiting credentials |
-| Dart | `kryon` | pub.dev | ✅ | Awaiting credentials |
+| TypeScript / JavaScript | `kryon-exec` | npm | ✅ | ✅ |
+| Dart | `kryon` | pub.dev | ✅ | ✅ |
 | Java | `io.github.piyush-mishra-00:kryon` | Maven Central | ✅ | Awaiting credentials |
 | Kotlin | `io.github.piyush-mishra-00:kryon-kotlin` | Maven Central | ✅ | Awaiting credentials |
 
@@ -34,17 +34,17 @@ print(kryon.Runtime().execute("git", ["--version"], encoding="utf-8").stdout)
 ## TypeScript / JavaScript
 
 ```bash
-npm install kryon
+npm install kryon-exec
 ```
 
 Node 20 or newer. **Zero runtime dependencies.** ESM-only, with generated declarations.
 
 ```ts
-import { Runtime } from "kryon";
+import { Runtime } from "kryon-exec";
 const result = await new Runtime({ encoding: "utf8" }).execute("git", ["--version"]);
 ```
 
-For browsers, import `kryon/browser` — it carries the types and errors and no runtime, because a
+For browsers, import `kryon-exec/browser` — it carries the types and errors and no runtime, because a
 browser cannot execute host commands. See [remote execution](../security/remote-execution.md).
 
 ## Dart
@@ -115,12 +115,18 @@ cd ../kotlin  && ./gradlew test
 You only need the toolchain for the SDK you are working on. See
 [development setup](../development/setup.md).
 
-## Package name availability
+## Package names, and the one conflict
 
-`kryon` was unclaimed on PyPI, npm and pub.dev when this project started, and Python has since
-claimed it. The other three are still unclaimed as of writing — which means available at that
-moment, not reserved. Names are claimed by publishing.
+`kryon` on PyPI. `kryon` on pub.dev. **`kryon-exec` on npm.**
 
-If one turns out to be taken by the time a release is ready, the conflict will be documented and a
-coherent fallback chosen (a scope such as `@kryon/core`), never an unrelated word and never a
-squat on something similar.
+The npm registry refuses the name `kryon` outright, with
+`403 — Package name too similar to existing package cron`. That is npm's typosquatting filter,
+not a name clash: nobody holds `kryon`, and nobody can publish it.
+
+`kryon-exec` was chosen over the alternatives (`@kryon/core`, `@piyush-mishra-00/kryon`) because
+it stays unscoped and short, and it still reads as this project. It is the same code, the same
+version number and the same conformance corpus as every other SDK — only the registry name
+differs, and only on npm.
+
+Maven Central uses `io.github.piyush-mishra-00` for both JVM artifacts, because that namespace is
+verifiable through GitHub account ownership and needs no domain.
