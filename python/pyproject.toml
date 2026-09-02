@@ -1,0 +1,119 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kryon"
+dynamic = ["version"]
+description = "Powerful terminal execution, everywhere — command execution, process control and streaming, with one conceptual API across languages."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "PIYUSH-MISHRA-00", email = "piyushmishra.professional@gmail.com" }]
+maintainers = [{ name = "PIYUSH-MISHRA-00", email = "piyushmishra.professional@gmail.com" }]
+keywords = [
+    "terminal",
+    "subprocess",
+    "process",
+    "command-execution",
+    "shell",
+    "pty",
+    "streaming",
+    "async",
+    "cross-platform",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: System :: Shells",
+    "Topic :: Terminals",
+    "Typing :: Typed",
+]
+
+# Zero runtime dependencies. Kryon's job is to orchestrate the standard library's
+# process facilities correctly; adding a dependency to do that would be adding a
+# supply-chain risk to a package that already runs arbitrary programs.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.23",
+    "pytest-timeout>=2.2",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/PIYUSH-MISHRA-00/kryon"
+Documentation = "https://github.com/PIYUSH-MISHRA-00/kryon/tree/main/docs"
+Repository = "https://github.com/PIYUSH-MISHRA-00/kryon"
+Issues = "https://github.com/PIYUSH-MISHRA-00/kryon/issues"
+Changelog = "https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "src/kryon/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kryon"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "README.md", "LICENSE", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+timeout = 120
+filterwarnings = ["error::ResourceWarning"]
+addopts = "-ra --strict-markers"
+markers = ["posix: requires a POSIX platform", "windows: requires Windows"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+target-version = "py39"
+
+[tool.ruff.lint]
+# UP is deliberately absent: the package supports Python 3.9, and `Optional[str]` reads
+# the same on every version we claim to support.
+select = ["E", "F", "W", "I", "N", "B", "C4", "SIM", "RUF", "S"]
+ignore = [
+    # Kryon executes programs. Flagging every subprocess call would mean a noqa on
+    # every meaningful line in the package.
+    "S404",
+    "S603",
+    "S607",
+    # execute_shell exists to reach a shell. That is the documented, separately named,
+    # warning-carrying API -- not an oversight.
+    "S602",
+    "S604",
+    # Error names come from spec/errors.md and are shared across five SDKs.
+    # `CommandNotFound` is the concept; renaming it to `CommandNotFoundError` here would
+    # break the one thing the taxonomy exists to provide.
+    "N818",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S108"]
+
+[tool.mypy]
+files = ["src/kryon"]
+strict = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+strict = false
