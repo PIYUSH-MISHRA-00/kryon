@@ -5,10 +5,10 @@
 Kryon runs operating-system commands and manages the processes behind them, with one
 conceptual API being implemented across five language ecosystems.
 
-> **Project status: `0.1.0`, alpha.** The Python SDK implements command execution and
-> process streaming. PTY, terminal emulation and remote transports are specified and
-> **not implemented**. Nothing here describes a feature that does not exist; where
-> something is planned, it says so.
+> **Project status: `1.0.0`.** All five SDKs -- Python, TypeScript, Dart, Java and Kotlin --
+> implement command execution and process streaming, and all five pass the same conformance
+> corpus. PTY, terminal emulation and remote transports are specified and **not implemented**.
+> Nothing here describes a feature that does not exist; where something is planned, it says so.
 
 ## Start here
 
@@ -42,7 +42,7 @@ conceptual API being implemented across five language ecosystems.
 |---|---|
 | [**Specification**](../spec/README.md) | The normative, language-neutral contract |
 | [**Conformance corpus**](../tests/conformance/cases.json) | The shared test corpus every SDK must pass |
-| [**Python SDK**](../python/README.md) | API reference for the implemented SDK |
+| [**Python**](../python/README.md) · [**TypeScript**](../javascript/README.md) · [**Dart**](../dart/README.md) · [**Java**](../java/README.md) · [**Kotlin**](../kotlin/README.md) | Per-SDK API reference |
 
 ## Contribute
 

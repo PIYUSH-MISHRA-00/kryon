@@ -32,6 +32,25 @@ They are **not** forks: the specification and the conformance corpus live on `ma
 authoritative there. A language branch that changes an expectation is proposing a
 specification change, and that change goes to `main` through its own pull request.
 
+### One deliberate divergence: the root README
+
+Each language branch replaces the repository's root `README.md` with that SDK's own README, so
+that someone landing on `github.com/PIYUSH-MISHRA-00/kryon/tree/dart` sees Dart documentation
+rather than a project overview that buries it.
+
+That is the *only* file that differs. It does mean a merge from `main` conflicts on `README.md`,
+and the resolution is always the same:
+
+```bash
+git checkout <language>
+git merge main
+git checkout --ours README.md      # keep the branch's SDK README
+git add README.md && git commit
+```
+
+The same content lives at `<language>/README.md` on `main`, so nothing is lost and nothing
+silently drifts — the branch root README is a copy of that file, updated with it.
+
 ## Feature branches
 
 Short-lived, named by type and scope:

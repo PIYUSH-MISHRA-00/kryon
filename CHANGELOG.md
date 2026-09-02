@@ -3,101 +3,125 @@
 All notable changes to this project are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
-adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). All SDKs share one
-version number, so that "Kryon 0.3" means the same set of capabilities in every language.
-
-While `0.x`, minor versions may contain breaking changes. Each one is listed here with a
-migration note.
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). All SDKs share one version
+number, so that "Kryon 1.0" means the same set of capabilities in every language.
 
 ## [Unreleased]
 
 Nothing yet.
 
-## [0.1.0] — 2026-09-02
+## [1.0.0] — 2026-09-02
 
-The first release. Establishes the specification, the conformance mechanism, and the Python
-SDK.
+**All five SDKs, one specification, one shared test corpus.**
 
-Not published to any package registry.
+The execution API is now stable. Four new SDKs join Python, and all five pass the same
+conformance corpus on Linux, macOS and Windows.
 
-### Added — Specification
+### Added — TypeScript SDK (`kryon` on npm)
 
-- `spec/execution.md` — one-shot execution: options, results, termination reasons, the
-  timeout and output-limit sequences, and the rule that argument-vector execution is the
-  default with no `shell` flag permitted.
-- `spec/process.md` — long-lived processes: streaming with backpressure, input, signals,
-  lifecycle, and scoped resource ownership.
-- `spec/errors.md` — the error taxonomy and the rule that failing to start is an error while
-  failing during a run is a result.
-- `spec/terminal.md` — the PTY and terminal-emulator model. Design; not implemented.
-- `spec/transport.md` — the transport interface and the security requirements a transport
-  server must satisfy. Design; not implemented.
-- `spec/conformance.md` — the helper contract and corpus format that make one test suite
-  runnable from five languages.
+- `Runtime.execute` / `executeShell` / `spawn`, with `AbortSignal` cancellation.
+- `KryonProcess` — output as an async iterable over a bounded queue with real backpressure
+  (the source streams are paused, not buffered), `Symbol.asyncDispose` for `await using`.
+- A browser entry point (`kryon/browser`) that exports the value types and error taxonomy and
+  **no runtime**, enforced by the package `exports` map so a bundler cannot pull
+  `node:child_process` into a web bundle by accident.
+- ESM, generated declarations, zero runtime dependencies, Node 20+.
+- Tests use Node's built-in runner — no test framework dependency.
 
-### Added — Conformance
+### Added — Dart SDK (`kryon` on pub.dev)
 
-- `tests/conformance/cases.json` — 36 language-neutral cases covering execution, arguments,
-  exit codes, streams, environment, working directory, stdin, timeouts, output limits,
-  encoding, shell execution, and process lifecycle. Each records what would break in the real
-  world if it regressed.
-- The Python runner, executing every case through both the synchronous and asynchronous APIs.
+- `Runtime.execute` / `executeShell` / `spawn`, `KryonProcess` with a single-subscription
+  `Stream<OutputChunk>`.
+- Backpressure through `StreamController` pause/resume, so a paused collector pauses the pipe.
+- Zero runtime dependencies, Dart 3.0+.
+- The output enum is named `OutputStream`: a package exporting a type called `Stream` would
+  shadow `dart:async`'s for every user who imported it.
 
-### Added — Python SDK (`kryon` 0.1.0)
+### Added — Java SDK (`io.github.piyush-mishra-00:kryon`)
 
-- `Runtime.execute()` — argument-vector execution with stdout/stderr capture, exit codes and
-  timing. No shell is ever invoked implicitly.
-- `Runtime.execute_shell()` — shell execution under a separate name, with an injection
-  warning. There is deliberately no `shell=True` option.
-- `Runtime.spawn()` / `Process` — streaming output as `(Stream, bytes)` pairs through a
-  bounded queue, stdin, signals, `terminate`, `kill`, `wait`, `close`, and context-manager
-  scope.
-- `kryon.aio.AsyncRuntime` / `AsyncProcess` — identical semantics with native `asyncio`
-  cancellation. Cancelling a task terminates the child before the `CancelledError` propagates.
-- `ExecutionOptions` — `cwd`, `env`, `clear_env`, `stdin`, `timeout`, `max_output_bytes`,
-  `encoding`, `check`, `kill_grace`. Runtime-level defaults, overridable per call.
-- `ExecutionResult` — with `termination`, `ok`, `check()`, truncation flags, and a `repr`
-  short enough to read in a debugger.
-- The error taxonomy: `KryonError`, `InvalidArguments`, `CommandNotFound`, `PermissionDenied`,
-  `ProcessStartFailed`, `ProcessFailed`, `ProcessTimeout`, `ProcessCancelled`,
-  `ResourceLimitExceeded`, `UnsupportedPlatform`. Each also inherits the closest builtin, so
-  `except FileNotFoundError` still catches `CommandNotFound`.
-- Zero runtime dependencies. Python 3.9–3.14 on Linux, macOS and Windows.
-- Full type annotations, `py.typed`, `mypy --strict` clean.
+- Builder-configured `ExecutionOptions`, `AutoCloseable` `KryonProcess`, output as a one-shot
+  `Iterable<OutputChunk>` drained from a bounded queue.
+- Zero runtime dependencies, Java 17+, compiled with `-Xlint:all -Werror`.
+- Two JVM limitations documented rather than hidden: `signal(int)` supports only `SIGTERM` and
+  `SIGKILL` because the JDK exposes nothing else, and a signal death is inferred from
+  `128 + signum` because the JDK reports no signal number.
 
-### Added — Documentation
+### Added — Kotlin SDK (`io.github.piyush-mishra-00:kryon-kotlin`)
 
-- Getting started, architecture, and platform-support guides.
-- Security documentation: threat model, command execution, remote execution, sandboxing.
-- Development documentation: setup, repository structure, branching, testing, releases.
-- `docs/guides/why-kryon.md`, including the cases where the answer is "use your standard
-  library".
-- Static website with no build step.
+- A native Kotlin implementation, not a wrapper over the Java SDK: `suspend` functions, `Flow`
+  output over a bounded channel, structured cancellation.
+- Cancellation reaches the blocking `Process.waitFor` via `runInterruptible`, so cancelling
+  actually stops the child rather than waiting it out.
+- `explicitApi()` and `allWarningsAsErrors` both on.
+- One dependency, `kotlinx-coroutines-core`.
 
-### Added — Project
+### Changed
 
-- Apache-2.0 licence, security policy, contribution guide, code of conduct, governance,
-  support and roadmap documents.
-- CI for Python across Linux, macOS and Windows on 3.9–3.14, plus package build validation
-  and repository checks. Workflows for the unimplemented SDKs report *not implemented* rather
-  than passing vacuously.
-- Issue and pull-request templates, and Dependabot.
+- **Python `0.1.0` → `1.0.0`.** No API changes. The version reflects that the specification is
+  now stable and agreed by five implementations.
+- The specification's execution, process and error documents are marked `1.0` and covered by the
+  compatibility promise in [`ROADMAP.md`](ROADMAP.md). PTY, terminal emulation and transports
+  remain design documents.
+- `spec/conformance.md` gained §3.1 (durations in the corpus are seconds; each runner converts to
+  its own idiom) and §3.2 (`setup_env` requires the variable in the runner's own environment;
+  runners in languages that cannot set it must skip with a reason rather than pass it through
+  `env`, which would silently turn a test about inheritance into a test about merging).
+- The `1.0` criteria in `ROADMAP.md` were rewritten. The earlier definition required PTY; five
+  agreeing implementations of a specified execution API turned out to be the stronger
+  compatibility claim. The criteria were changed openly rather than quietly ignored.
+
+### Fixed
+
+Three real bugs, each found by writing a second implementation or by the cross-platform matrix:
+
+- **Python:** the platform-skip marks were applied as `@posix_only("reason")`, which pytest reads
+  as a condition *string* to evaluate. Every POSIX-only test errored instead of running — and it
+  passed on Windows because those tests skip before evaluation. The four affected tests were the
+  ones asserting that no orphaned process is left behind.
+- **Dart:** `Process.start` was called with both an explicit environment map and
+  `includeParentEnvironment: true`, so variables the caller removed via `env: {NAME: null}` were
+  silently restored by `dart:io`.
+- **Kotlin:** cancelling a coroutine does not interrupt a blocking call, so cancelling an
+  `execute` sat in `Process.waitFor` until the child finished on its own — exactly the "returns
+  control while leaving a process running" failure the design exists to prevent.
+- **TypeScript:** an `AbortSignal` that was *already* aborted never fires its event, so the
+  listener alone missed it and the process ran to completion.
+- **Website:** the header overflowed the viewport on 320–360px devices, forcing a horizontal
+  scrollbar on the whole page.
 
 ### Known limitations
 
 Stated plainly so nobody discovers them the hard way:
 
-- **PTY is not implemented.** Programs that buffer their output when not attached to a
-  terminal will still buffer. Kryon cannot change that from the outside.
+- **PTY is not implemented.** Programs that buffer their output when not attached to a terminal
+  will still buffer. Kryon cannot change that from the outside.
 - **Terminal emulation is not implemented.** Output is captured verbatim, escape sequences
   included, and nothing interprets them.
 - **No remote transports.** Execution is local only.
-- **Process trees are not terminated.** Stopping a process does not stop its descendants on
-  any platform.
-- **Only the Python SDK exists.** The specification has one implementation, which means it
-  has not yet been proven to be a specification rather than a description of Python.
-- **Kryon is not a sandbox**, and its limits are resource management rather than containment.
-  See [the threat model](docs/security/threat-model.md).
+- **Process trees are not terminated.** Stopping a process does not stop its descendants on any
+  platform.
+- **Kryon is not a sandbox**, and its limits are resource management rather than containment. See
+  [the threat model](docs/security/threat-model.md).
 
-[Unreleased]: https://github.com/PIYUSH-MISHRA-00/kryon/compare/v0.1.0...HEAD
+## [0.1.0] — 2026-09-02
+
+The first release. Established the specification, the conformance mechanism, and the Python SDK.
+
+### Added
+
+- `spec/` — `execution.md`, `process.md`, `errors.md` as normative documents; `terminal.md` and
+  `transport.md` as design; `conformance.md` defining the helper contract.
+- `tests/conformance/cases.json` — 36 language-neutral cases, each recording what would break in
+  the real world if it regressed.
+- Python SDK: `Runtime.execute` / `execute_shell` / `spawn`, `kryon.aio.AsyncRuntime`, the full
+  option set, `ExecutionResult`, the error taxonomy, zero runtime dependencies, Python 3.9–3.14.
+- Documentation: getting started, architecture, security (threat model, command execution, remote
+  execution, sandboxing), development, platform support.
+- Static website with no build step, CI across three platforms, issue and PR templates,
+  Dependabot, governance, security policy and code of conduct.
+
+Published to PyPI as `kryon` 0.1.0.
+
+[Unreleased]: https://github.com/PIYUSH-MISHRA-00/kryon/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/PIYUSH-MISHRA-00/kryon/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/PIYUSH-MISHRA-00/kryon/releases/tag/v0.1.0

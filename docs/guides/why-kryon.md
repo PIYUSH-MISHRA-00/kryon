@@ -29,11 +29,12 @@ implement the protocol itself.
 The value is not in any single feature. It is in getting all of the following right at once,
 in more than one language:
 
-**You run commands from several languages.** A Python service, a Node CLI and a Kotlin
-backend that all shell out will, with stock APIs, disagree about timeouts, environment
-handling, output limits and error semantics. Kryon's proposition is one specified behaviour
-across all of them, verified by a
-[shared conformance corpus](../../tests/conformance/cases.json).
+**You run commands from several languages.** A Python service, a Node CLI and a Kotlin backend
+that all shell out will, with stock APIs, disagree about timeouts, environment handling, output
+limits and error semantics. Kryon's proposition is one specified behaviour across all of them,
+verified by a [shared conformance corpus](../../tests/conformance/cases.json) that all five SDKs
+actually run. This is the reason the project exists, and the only one no single-language library
+can match.
 
 **You are streaming, not just capturing.** `capture_output=True` waits for the process to
 finish. Showing a build's output live means dealing with two pipes concurrently, chunk
@@ -131,10 +132,13 @@ one is the mistake the [threat model](../security/threat-model.md) exists to pre
 
 ## What Kryon has to earn
 
-Nothing above is a claim of superiority, and most of it is not implemented yet. Today Kryon
-is: a carefully specified execution model, one SDK that implements it, a conformance corpus,
-and a written architecture for the rest.
+Nothing above is a claim of superiority, and the terminal half of the project is not implemented
+yet. Today Kryon is: a carefully specified execution model, **five** SDKs that implement it and
+agree, a shared conformance corpus, and a written architecture for the rest.
 
-Whether that becomes worth adopting depends on the next several releases, not on this page.
+What it has not earned yet is users. A specification five implementations agree on is strong
+evidence of internal consistency and no evidence at all that the model is right for your problem.
+That evidence comes from people using it and saying where it is wrong.
+
 The [roadmap](../../ROADMAP.md) says what is actually planned, and the
 [status table](../../spec/README.md#implementation-status) says what actually exists.

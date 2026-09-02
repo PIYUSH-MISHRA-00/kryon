@@ -5,8 +5,9 @@ Thanks for considering it. This document is the short version; the details live 
 
 ## The quickest useful contributions
 
-**Try it and report what surprised you.** Kryon is `0.1.0`. An API that confused you is a
-bug in the API, not in you.
+**Try it and report what surprised you.** An API that confused you is a bug in the API, not in
+you. Five implementations agreeing with each other is evidence of consistency, not evidence the
+model is right for your problem — that evidence only comes from use.
 
 **Fix documentation.** Anything wrong, unclear, or out of date. Especially anything that
 implies a security property Kryon does not have — that is a genuine security bug, and it is
@@ -16,8 +17,13 @@ implies a security property Kryon does not have — that is a genuine security b
 languages and is not tested, [add it](docs/development/testing.md#adding-a-case). This is the
 highest-leverage contribution in the repository.
 
-**Implement an SDK.** The largest and most valuable one. See
-[adding an SDK](docs/architecture/sdk-design.md#adding-an-sdk).
+**Implement an SDK.** Five exist. A sixth — Go, Rust, Swift, C# — would be very welcome, and
+the path is well worn now. See [adding an SDK](docs/architecture/sdk-design.md#adding-an-sdk).
+
+**Work on PTY.** The next phase, and the one that turns this from a process library into a
+terminal platform. It needs native code per ecosystem, so it is the hardest thing on the list and
+the one most worth pairing on — [start a discussion](https://github.com/PIYUSH-MISHRA-00/kryon/discussions)
+before writing code.
 
 ## Setup
 
@@ -37,7 +43,11 @@ Full instructions: [development setup](docs/development/setup.md).
 |---|---|
 | [`spec/`](spec/) | The normative, language-neutral contract |
 | [`tests/conformance/`](tests/conformance/) | The shared corpus every SDK runs |
-| [`python/`](python/) | Python SDK — implemented |
+| [`python/`](python/) | Python SDK |
+| [`javascript/`](javascript/) | TypeScript SDK |
+| [`dart/`](dart/) | Dart SDK |
+| [`java/`](java/) | Java SDK |
+| [`kotlin/`](kotlin/) | Kotlin SDK |
 | [`docs/`](docs/) | Explanatory documentation |
 | [`website/`](website/) | Static site, no build step |
 | [`examples/`](examples/) | Runnable examples |
@@ -76,9 +86,9 @@ Types: `feat`, `fix`, `docs`, `spec`, `test`, `ci`, `build`, `refactor`, `perf`,
 
 ## Before opening a pull request
 
-- [ ] `pytest` passes, conformance included
-- [ ] `ruff check .` and `ruff format --check .` are clean
-- [ ] `mypy` is clean
+- [ ] The SDK you touched passes its tests, conformance included
+- [ ] Its linter, formatter and type checker are clean
+- [ ] `scripts/check.sh` passes for whatever you have installed
 - [ ] New behaviour has a test; a bug fix has a test that failed before it
 - [ ] Cross-language behaviour has a [corpus case](docs/development/testing.md#adding-a-case) with a `why`
 - [ ] Documentation updated if behaviour changed
@@ -108,12 +118,24 @@ old rule and nobody notices for two years.
 restriction and a documented difference, not a weaker assertion.
 
 **Anything that makes the dangerous path easier.** A `shell=True` convenience flag will be
-declined however well-argued. That is the whole point.
+declined however well-argued, in any SDK. The specification forbids it, and that is the whole
+point.
+
+**A version bump in one SDK.** All five share one number, and `scripts/check_versions.py` fails
+the build if they drift.
 
 ## Code style
 
-Whatever the ecosystem's formatter says. Python: `ruff format`, 100 columns, `ruff check`
-clean, `mypy --strict` clean.
+Whatever the ecosystem's formatter and linter say, with warnings treated as errors wherever the
+toolchain allows it:
+
+| SDK | Gate |
+|---|---|
+| Python | `ruff check`, `ruff format`, `mypy --strict` |
+| TypeScript | `tsc --strict --noEmit` |
+| Dart | `dart analyze --fatal-infos`, `dart format` |
+| Java | `-Xlint:all -Werror` |
+| Kotlin | `explicitApi()`, `allWarningsAsErrors` |
 
 Beyond formatting:
 
@@ -131,8 +153,8 @@ Beyond formatting:
 The process, in order:
 
 1. Read [`spec/`](spec/) in full — including the platform-difference sections.
-2. Implement the [helper](spec/conformance.md#2-the-helper-contract) in that language.
-   Under fifty lines.
+2. Implement the [helper](spec/conformance.md#2-the-helper-contract) in that language. Under a
+   hundred lines; there are five to copy the shape from.
 3. Write the corpus runner mapping each case onto your API. Skips are fine; silent omissions
    are not.
 4. Implement `execute`, then `spawn`, then the error taxonomy.

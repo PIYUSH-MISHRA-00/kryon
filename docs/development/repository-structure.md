@@ -13,10 +13,16 @@ kryon/
 ├── tests/conformance/    The shared corpus every SDK runs
 │   └── cases.json            one file, never forked per language
 │
-├── python/               Python SDK — implemented
-│   ├── src/kryon/
-│   ├── tests/
-│   └── pyproject.toml
+├── python/               Python SDK
+│   └── src/kryon/  tests/  pyproject.toml
+├── javascript/           TypeScript SDK
+│   └── src/  test/  package.json  tsconfig.json
+├── dart/                 Dart SDK
+│   └── lib/  test/  example/  pubspec.yaml
+├── java/                 Java SDK
+│   └── src/  build.gradle.kts  gradlew
+├── kotlin/               Kotlin SDK
+│   └── src/  build.gradle.kts  gradlew
 │
 ├── docs/                 Explanatory documentation
 │   ├── getting-started/
@@ -85,13 +91,16 @@ noticed when they break.
 **A `core/` directory.** There is no shared native core — [why](../architecture/sdk-design.md#why-no-shared-native-core).
 An empty `core/` would advertise an architecture that does not exist.
 
-**Empty SDK directories.** There is no `javascript/` with a `TODO` in it. A directory
-containing a placeholder is worse than no directory: it looks like an implementation to
-anyone browsing the repository. The
-[status table](../../spec/README.md#implementation-status) is the honest signal.
+**Empty SDK directories.** Every SDK directory here contains a working, tested implementation.
+A directory containing a placeholder would be worse than no directory: it looks like an
+implementation to anyone browsing the repository. The
+[status table](../../spec/README.md#implementation-status) remains the honest signal, and a new
+SDK directory does not appear until it passes the corpus.
 
-**A monorepo tool.** There is one buildable package. Adding workspace tooling before there
-are two packages to coordinate is configuration for a problem nobody has.
+**A monorepo tool.** Five packages across four toolchains, each building independently with its
+own ecosystem's standard commands. A workspace tool would have to understand pip, npm, pub and
+Gradle at once — a harder problem than the one it would solve. `scripts/check.sh` runs whatever
+is installed and skips the rest.
 
 ## Where things go
 

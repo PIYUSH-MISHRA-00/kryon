@@ -6,11 +6,12 @@ Only for the SDK you are working on. Contributing a Python fix does not require 
 
 | Working on | Requires |
 |---|---|
-| Python SDK | Python 3.9+ |
 | Documentation, spec, website | Nothing but a text editor and a browser |
-| JavaScript SDK | Node 20+ *(SDK not implemented yet)* |
-| Dart SDK | Dart 3.0+ *(SDK not implemented yet)* |
-| Java / Kotlin SDK | JDK 17+ *(SDKs not implemented yet)* |
+| Python SDK | Python 3.9+ |
+| TypeScript SDK | Node 20+ |
+| Dart SDK | Dart 3.0+ |
+| Java SDK | JDK 17+ (the Gradle wrapper handles Gradle) |
+| Kotlin SDK | JDK 17+ (the Gradle wrapper handles Gradle and Kotlin) |
 
 ## Python
 
@@ -37,6 +38,65 @@ python -m build           # sdist + wheel
 
 All four must pass before a pull request is ready. CI runs exactly these.
 
+## TypeScript
+
+```bash
+cd javascript
+npm install
+npm run build
+npm test           # unit tests + the shared conformance corpus
+npm run typecheck
+```
+
+Tests use Node's built-in runner. There is no test framework dependency.
+
+## Dart
+
+```bash
+cd dart
+dart pub get
+dart analyze       # must be clean
+dart test
+```
+
+The conformance helper is compiled once to a native executable; `dart run` would recompile it on
+every one of seventy invocations and turn a fast suite into a two-minute one.
+
+## Java
+
+```bash
+cd java
+./gradlew build    # compile, javadoc, sources jar, tests
+./gradlew test
+```
+
+Compiled with `-Xlint:all -Werror`, so a warning fails the build. Targets Java 17 bytecode via
+`--release` rather than a toolchain, so any modern JDK works without Gradle downloading a second
+one.
+
+## Kotlin
+
+```bash
+cd kotlin
+./gradlew build
+./gradlew test
+```
+
+`explicitApi()` and `allWarningsAsErrors` are both on.
+
+## A note on `setup_env`
+
+Two conformance cases need a variable set in the *test runner's own* environment. Python and
+JavaScript set it themselves; Dart and the JVM cannot, so their runners skip those cases with a
+reason unless it is already present:
+
+```bash
+KRYON_CONFORMANCE_INHERITED=from-parent dart test
+KRYON_CONFORMANCE_INHERITED=from-parent ./gradlew test
+```
+
+CI sets it for every SDK. See [`spec/conformance.md`](../../spec/conformance.md) §3.2.
+
 ## The website
 
 Plain HTML, CSS and JavaScript. No build step, no framework, no `node_modules`:
@@ -61,7 +121,7 @@ on a machine that only has Python.
 
 ## Before you open a pull request
 
-- [ ] `pytest` passes, including the conformance corpus
+- [ ] The SDK you touched passes its tests, including the conformance corpus
 - [ ] `ruff check .` and `ruff format --check .` are clean
 - [ ] `mypy` is clean
 - [ ] New behaviour has a test; a bug fix has a test that failed before the fix

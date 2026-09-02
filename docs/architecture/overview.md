@@ -22,8 +22,9 @@ fuse two or three of them, and that fusion is what makes them hard to reuse.
 └──────────────────────────────────────────────────────────────┘
 ```
 
-Only layer 1 exists today, in Python. Layers 2–4 have written specifications; layer 5 has a
-design intent. The [status table](../../spec/README.md#implementation-status) is authoritative.
+Only layer 1 exists today, and it exists in all five languages. Layers 2–4 have written
+specifications; layer 5 has a design intent. The
+[status table](../../spec/README.md#implementation-status) is authoritative.
 
 ## Why these boundaries
 
@@ -49,8 +50,8 @@ That was a design constraint from the first line, not a later refactor.
 
 ## Layer 1 — Execution engine
 
-The part that exists. Specified in [`spec/execution.md`](../../spec/execution.md) and
-[`spec/process.md`](../../spec/process.md).
+The part that exists, in all five SDKs. Specified in
+[`spec/execution.md`](../../spec/execution.md) and [`spec/process.md`](../../spec/process.md).
 
 Two operations:
 

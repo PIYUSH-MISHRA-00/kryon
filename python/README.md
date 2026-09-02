@@ -5,10 +5,13 @@
 Run operating-system commands, stream their output, and manage the processes behind them —
 with an API designed so the dangerous thing is the one you have to ask for by name.
 
-> **Status: `0.1.0`, alpha.** Command execution and process streaming are implemented and
-> covered by the [cross-language conformance corpus](../tests/conformance/cases.json). PTY,
-> terminal emulation and remote transports are specified but **not implemented**. The API
-> may change before `1.0`.
+[![PyPI](https://img.shields.io/pypi/v/kryon.svg)](https://pypi.org/project/kryon/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/pypi/pyversions/kryon.svg)](pyproject.toml)
+
+> **`1.0.0`.** Command execution and process streaming are implemented and pass the
+> [cross-language conformance corpus](../tests/conformance/cases.json) on Linux, macOS and
+> Windows. PTY, terminal emulation and remote transports are specified but **not implemented**.
 
 This is the Python SDK of [Kryon](https://github.com/PIYUSH-MISHRA-00/kryon). It has **zero
 runtime dependencies**.
@@ -20,9 +23,6 @@ pip install kryon
 ```
 
 Requires Python 3.9 or newer. Works on Linux, macOS and Windows.
-
-> Not yet published to PyPI. Until the first release, install from source:
-> `pip install "kryon @ git+https://github.com/PIYUSH-MISHRA-00/kryon.git#subdirectory=python"`
 
 ## Run something
 
@@ -177,3 +177,8 @@ on every platform and touch nothing outside a temporary directory.
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
+
+---
+
+If Kryon saves you time, you can
+[buy me a coffee](https://buymeacoffee.com/piyushmishra00).

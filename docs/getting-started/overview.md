@@ -8,8 +8,8 @@ allocate real pseudo-terminals, emulate terminal state, and carry all of that ov
 transport to somewhere else.
 
 The part that exists today is the foundation: **command execution and process control**,
-implemented in Python, specified language-neutrally, and verified by a conformance corpus
-that every future SDK must pass.
+implemented in all five languages, specified language-neutrally, and verified by one shared
+conformance corpus that every SDK runs against its own implementation.
 
 ## What Kryon is not
 
@@ -21,7 +21,8 @@ already has. Its timeouts and output caps are resource management, not containme
 excellent components already exist for it. Kryon's interest is what sits behind the
 rendering.
 
-**Not production-ready.** It is `0.1.0`. The API will change.
+**Not a PTY library, yet.** Programs that buffer their output when they detect they are not
+attached to a terminal will still buffer. That is what PTY support is for, and it is `1.x` work.
 
 ## Why it exists
 

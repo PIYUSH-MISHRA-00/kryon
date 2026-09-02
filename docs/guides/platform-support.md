@@ -20,7 +20,7 @@ else says what it actually is.
 | Cancellation | ✅ | ✅ | ✅ | Planned | ❌ | ❌ |
 | `terminate()` | ✅ `SIGTERM` | ✅ `SIGTERM` | ⚠️ No graceful stop | Planned | ❌ | ❌ |
 | `kill()` | ✅ `SIGKILL` | ✅ `SIGKILL` | ✅ | Planned | ❌ | ❌ |
-| Arbitrary `signal()` | ✅ | ✅ | ❌ No signals exist | Planned | ❌ | ❌ |
+| Arbitrary `signal()` | ✅ ¹¹ | ✅ ¹¹ | ❌ No signals exist | Planned | ❌ | ❌ |
 | `result.signal` reported | ✅ | ✅ | ❌ Always `None` | Planned | ❌ | ❌ |
 | Process-tree termination | ❌ Planned | ❌ Planned | ❌ Planned | ❌ | ❌ | ❌ |
 | PTY | ❌ Planned | ❌ Planned | ❌ Planned (ConPTY) | ❌ Planned | ❌ Not possible | ❌ Backend |
@@ -33,6 +33,9 @@ available, with the reason
 
 ¹ `clear_env=True` still preserves `SystemRoot` and `SystemDrive` on Windows. Many binaries,
 including ones in `System32`, fail to start without them.
+
+¹¹ On the JVM (Java and Kotlin), `signal()` accepts only `SIGTERM` (15) and `SIGKILL` (9). See
+[JVM limitations](#jvm-limitations).
 
 ## Windows differences that will bite you
 
@@ -79,6 +82,41 @@ arguments containing `&`, `|`, `^` or `%`.
 `PATHEXT`. A `.bat` file runs through `cmd.exe`, which reintroduces shell parsing for that
 process's own arguments. Be aware of what you are actually launching.
 
+## JVM limitations
+
+Two of these are the JDK's, not Kryon's, and both are stated rather than hidden.
+
+### `signal()` supports only `SIGTERM` and `SIGKILL`
+
+The JDK's `Process` API exposes `destroy()` and `destroyForcibly()` and nothing else. Sending
+`SIGHUP`, `SIGUSR1` or anything else would require a native call, and Kryon deliberately makes
+none: a JNI dependency in a library whose whole selling point is "no dependencies and no surprises"
+is a bad trade for a rarely used signal.
+
+The Python and Dart SDKs send arbitrary signals, because their runtimes expose them.
+
+### A signal death is inferred, not reported
+
+The JVM reports a process killed by a signal as exit value `128 + signum` and gives no signal
+number of its own. Kryon derives `signal` from that, which means a program that genuinely calls
+`exit(143)` is indistinguishable from one killed by `SIGTERM`.
+
+This is why `termination` exists as a separate field: a Kryon-initiated stop reports `TIMEOUT` or
+`CANCELLED` regardless of what the exit value looks like, so the ambiguity never affects the
+answer that matters.
+
+The Python and Dart SDKs read the real signal from their runtime and do not have this problem.
+
+## Language runtime support
+
+| SDK | Minimum | Tested in CI |
+|---|---|---|
+| Python | 3.9 | 3.9, 3.10, 3.11, 3.12, 3.13, 3.14 |
+| TypeScript | Node 20 | Node 20, 22, 24 |
+| Dart | 3.0 | Stable channel |
+| Java | 17 | 17, 21 |
+| Kotlin | JVM 17 | 17, 21 |
+
 ## Mobile
 
 **Android** can execute processes — it is Linux — but with meaningful restrictions: no
@@ -102,18 +140,6 @@ separate is why [layer 3 and layer 5](../architecture/overview.md) are different
 
 Do not deploy the naive version of this. Read [remote execution](../security/remote-execution.md)
 first.
-
-## Python version support
-
-| Version | Status |
-|---|---|
-| 3.9 | Supported, tested in CI |
-| 3.10 | Supported, tested in CI |
-| 3.11 | Supported, tested in CI |
-| 3.12 | Supported, tested in CI |
-| 3.13 | Supported, tested in CI |
-| 3.14 | Supported, tested in CI |
-| 3.8 and earlier | Not supported — end of life |
 
 ## How platform differences are handled in tests
 

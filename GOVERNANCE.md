@@ -46,7 +46,9 @@ These are not preferences; they are the terms on which the project is worth usin
 2. **Security is not a section.** This project executes arbitrary commands. Convenience never
    wins over a security property.
 3. **No overstated claims.** Nothing is described as implemented until it is implemented and
-   tested. No fabricated badges, adoption numbers, testimonials or benchmark figures.
+   passes the conformance corpus. No fabricated badges, adoption numbers, testimonials or
+   benchmark figures. `1.0.0` states plainly what it does *not* promise, and that list is
+   maintained as carefully as the feature list.
 4. **Specification before implementation.** For anything cross-language.
 5. **Dependencies are a liability.** Especially in a package that runs arbitrary programs.
 6. **No hidden behaviour.** No telemetry, no phoning home, no implicit shell, no ambient

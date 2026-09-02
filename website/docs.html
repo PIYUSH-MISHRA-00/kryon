@@ -67,7 +67,7 @@
 <section>
   <div class="wrap">
     <h2>Install and run</h2>
-    <p class="section-lede">Python is the only implemented SDK today.</p>
+    <p class="section-lede">All five SDKs implement the same execution API and pass the same conformance corpus.</p>
 
     <div class="code" style="margin-bottom:2rem">
       <div class="code-head">
@@ -75,8 +75,14 @@
         <span class="name">shell</span>
         <button class="copy" type="button" data-copy>Copy</button>
       </div>
-<pre><code><span class="t-com"># Not yet published to PyPI — install from source until the first release.</span>
-pip install <span class="t-str">"kryon @ git+https://github.com/PIYUSH-MISHRA-00/kryon.git#subdirectory=python"</span></code></pre>
+<pre><code><span class="t-com"># Python is on PyPI.</span>
+pip install kryon
+
+<span class="t-com"># The other four are implemented and tested; their registry accounts are pending.</span>
+npm install kryon
+dart pub add kryon
+<span class="t-com"># Gradle: io.github.piyush-mishra-00:kryon:1.0.0</span>
+<span class="t-com"># Gradle: io.github.piyush-mishra-00:kryon-kotlin:1.0.0</span></code></pre>
     </div>
 
     <div class="grid">
@@ -95,6 +101,22 @@ pip install <span class="t-str">"kryon @ git+https://github.com/PIYUSH-MISHRA-00
       <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/python/README.md">
         <h3>Python SDK reference</h3>
         <p>Every option, result field, process method and error, with platform notes.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/javascript/README.md">
+        <h3>TypeScript SDK reference</h3>
+        <p>ESM, <code>AbortSignal</code> cancellation, and a browser build with no runtime.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/dart/README.md">
+        <h3>Dart SDK reference</h3>
+        <p><code>Stream</code>-based output with real backpressure, zero dependencies.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/java/README.md">
+        <h3>Java SDK reference</h3>
+        <p>Builders, try-with-resources, and the two JVM limitations stated plainly.</p>
+      </a>
+      <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/kotlin/README.md">
+        <h3>Kotlin SDK reference</h3>
+        <p>Coroutines, <code>Flow</code>, and cancellation that actually reaches the child.</p>
       </a>
     </div>
   </div>
@@ -216,8 +238,9 @@ pip install <span class="t-str">"kryon @ git+https://github.com/PIYUSH-MISHRA-00
 <footer class="site">
   <div class="wrap">
     <div class="fine">
-      <span>Kryon — Apache-2.0 licensed. Built by <a href="https://github.com/PIYUSH-MISHRA-00">PIYUSH-MISHRA-00</a>.</span>
-      <span class="mono">alpha · 0.1.0 · not a sandbox</span>
+      <span>Kryon — Apache-2.0 licensed. Built by <a href="https://github.com/PIYUSH-MISHRA-00">PIYUSH-MISHRA-00</a>
+        · <a href="https://buymeacoffee.com/piyushmishra00">buy me a coffee</a></span>
+      <span class="mono">1.0.0 · five SDKs · not a sandbox</span>
     </div>
   </div>
 </footer>

@@ -48,17 +48,38 @@ Rules:
 ### Running it
 
 ```bash
-cd python && pytest -k conformance
+cd python     && pytest -k conformance
+cd javascript && npm test
+cd dart       && dart test test/conformance_test.dart
+cd java       && ./gradlew test
+cd kotlin     && ./gradlew test
 ```
 
-Every case runs twice — once through `Runtime`, once through `AsyncRuntime` — because "the
-async one has the same semantics" is a claim, and claims get tested.
+Python runs every case twice — once through `Runtime`, once through `AsyncRuntime` — because
+"the async one has the same semantics" is a claim, and claims get tested.
+
+Two cases need `KRYON_CONFORMANCE_INHERITED=from-parent` in the runner's own environment. Python
+and JavaScript set it themselves; Dart and the JVM cannot, so their runners skip those cases with
+a reason unless it is already present. CI sets it everywhere. See
+[`spec/conformance.md`](../../spec/conformance.md) §3.2.
 
 ## The helper
 
-Cases invoke a small program each SDK provides in its own language, implementing a fixed set
-of verbs. The Python one is [`python/tests/helper.py`](../../python/tests/helper.py); it is
-about eighty lines and has no dependencies.
+Cases invoke a small program each SDK provides in its own language, implementing a fixed set of
+verbs. All five are under a hundred lines and none has a dependency:
+
+| SDK | Helper |
+|---|---|
+| Python | [`python/tests/helper.py`](../../python/tests/helper.py) |
+| TypeScript | [`javascript/test/helper.mjs`](../../javascript/test/helper.mjs) |
+| Dart | [`dart/test/helper.dart`](../../dart/test/helper.dart) |
+| Java | [`ConformanceHelper.java`](../../java/src/test/java/io/github/piyushmishra00/kryon/ConformanceHelper.java) |
+| Kotlin | [`ConformanceHelper.kt`](../../kotlin/src/test/kotlin/io/github/piyushmishra00/kryon/coroutines/ConformanceHelper.kt) |
+
+One verb, `ignoreterm`, cannot be implemented identically everywhere: the JVM cannot ignore
+`SIGTERM` without an unsupported API, so its helpers install a shutdown hook that outlives the
+grace period instead. The observable behaviour is the same — a polite stop does not end the
+process, so Kryon must escalate to a kill — which is what the case actually tests.
 
 It is always run unbuffered. A helper that buffers turns every streaming assertion into a
 false failure — which is also the single most common surprise when using Kryon against real
@@ -128,9 +149,13 @@ pytest --timeout=30         # tighter per-test timeout
 
 ## CI
 
-Python is tested on Linux, macOS and Windows across 3.9–3.14. The matrix is not decoration:
-the Windows differences in [platform support](../guides/platform-support.md) were found by
-running there, and would have been assumed away otherwise.
+Every SDK is tested on Linux, macOS and Windows. The matrix is not decoration — it has found
+real bugs a single-platform run would have missed:
 
-Workflows for the unimplemented SDKs report *not implemented* rather than passing vacuously.
+- Python's platform-skip marks were misapplied, so four orphaned-process tests errored instead of
+  running. They passed on Windows because those tests skip before the condition is evaluated, so
+  only the POSIX runners exposed it.
+- The Windows differences documented in [platform support](../guides/platform-support.md) were
+  found by running there, and would otherwise have been assumed away.
+
 A green check that means "we did not test anything" is worse than a missing check.

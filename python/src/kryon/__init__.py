@@ -46,7 +46,7 @@ from kryon.errors import (
 from kryon.model import ExecutionOptions, ExecutionResult, Stream, TerminationReason
 from kryon.runtime import Process, Runtime
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 # Grouped by concept rather than sorted: this list doubles as the map of the package.
 __all__ = [  # noqa: RUF022

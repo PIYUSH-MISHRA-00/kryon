@@ -36,10 +36,14 @@ You will be credited in the advisory unless you prefer otherwise. There is no bu
 
 | Version | Supported |
 |---|---|
-| `0.1.x` | ✅ Current |
-| `< 0.1` | ❌ No releases exist |
+| `1.0.x` | ✅ Current |
+| `0.1.x` | ⚠️ Python only; upgrade to `1.0` |
 
-While `0.x`, only the latest minor version receives security fixes. Backports begin at `1.0`.
+Security fixes land on the latest minor version. The previous minor receives backports for
+security issues only, for three months after a new minor ships.
+
+All five SDKs share one version number, so a fix that touches shared behaviour ships everywhere at
+once.
 
 ## Scope
 
@@ -100,12 +104,15 @@ The short version:
 
 ## Project security practices
 
-- **No runtime dependencies** in the Python SDK. Nothing to compromise upstream.
+- **No runtime dependencies** in the Python, TypeScript, Dart or Java SDKs. Kotlin has exactly
+  one, `kotlinx-coroutines-core`, and that choice is argued for in its README rather than assumed.
 - **No network calls.** No telemetry, no analytics, no update check, no crash reporting, and
   no configuration that could enable any of them.
 - **No secrets in the repository.** Enforced by `.gitignore` and checked before release.
-- **Trusted Publishing** for PyPI when releases begin — an OIDC assertion from this
-  repository's workflow, so no long-lived token exists to steal.
+- **Trusted Publishing** wherever the registry offers it — PyPI, npm and pub.dev all accept an
+  OIDC assertion from this repository's workflow, so no long-lived token exists to steal. Maven
+  Central still requires a token and a GPG key; both live in a GitHub environment behind a
+  required review.
 - **Dependabot** on GitHub Actions and each ecosystem's manifests.
 - **Signed release tags.**
 - **Security tests are conformance cases**, so a regression fails five SDKs' test suites at

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kryon — Powerful terminal execution, everywhere</title>
-<meta name="description" content="Kryon is a cross-platform terminal execution platform: run system commands, drive interactive processes and stream their output, with one conceptual API across Python, TypeScript, Dart, Java and Kotlin.">
+<meta name="description" content="Kryon is a cross-platform terminal execution platform: run system commands, drive interactive processes and stream their output. One conceptual API across Python, TypeScript, Dart, Java and Kotlin, verified by a shared conformance corpus.">
 <link rel="canonical" href="https://piyush-mishra-00.github.io/kryon/">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
@@ -73,11 +73,12 @@
 <!-- ---------------------------------------------------------------- hero -->
 <section class="hero">
   <div class="wrap">
-    <p class="status-pill">alpha · 0.1.0 · Python SDK only</p>
+    <p class="status-pill">1.0.0 · five SDKs · execution stable, PTY not yet</p>
     <h1>Powerful terminal execution, everywhere.</h1>
     <p class="tagline">
       Run operating-system commands, drive interactive processes, and stream their output —
-      with one conceptual API being built across Python, TypeScript, Dart, Java and Kotlin.
+      with one conceptual API across Python, TypeScript, Dart, Java and Kotlin. All five pass
+      the same conformance corpus.
     </p>
     <div class="cta">
       <a class="btn primary" href="docs.html">Get started</a>
@@ -208,7 +209,7 @@ result = runtime.<span class="t-fn">execute</span>(<span class="t-str">"git"</sp
         <span class="n">1</span>
         <span class="title">Execution engine</span>
         <span class="desc">Spawn, streams, signals, limits, lifecycle</span>
-        <span class="badge done">Implemented</span>
+        <span class="badge done">Implemented &times;5</span>
       </div>
       <div class="layer">
         <span class="n">2</span>
@@ -237,7 +238,8 @@ result = runtime.<span class="t-fn">execute</span>(<span class="t-str">"git"</sp
     </div>
 
     <p class="muted" style="margin-top:1.5rem">
-      Only layer 1 exists today, in Python. <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/overview.md">Read the architecture</a>
+      Only layer 1 exists today &mdash; and it exists in all five languages.
+      <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/overview.md">Read the architecture</a>
       or check the <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/spec/README.md#implementation-status">status table</a>.
     </p>
   </div>
@@ -370,8 +372,8 @@ asyncio.<span class="t-fn">run</span>(<span class="t-fn">main</span>())</code></
   <div class="wrap">
     <h2>Five SDKs, one specification</h2>
     <p class="section-lede">
-      Honest status. A row says “implemented” only when it is implemented, tested and passing
-      the shared conformance corpus.
+      Honest status. A row says “implemented” only when it is implemented, tested, and passing
+      the shared conformance corpus on Linux, macOS and Windows.
     </p>
 
     <div class="table-scroll">
@@ -384,31 +386,33 @@ asyncio.<span class="t-fn">run</span>(<span class="t-fn">main</span>())</code></
             <td><strong>Python</strong></td>
             <td><code>kryon</code></td>
             <td>PyPI</td>
-            <td><span class="badge done">Implemented</span> <span class="muted">· not yet published</span></td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· published</span></td>
           </tr>
           <tr>
             <td>TypeScript / JavaScript</td><td><code>kryon</code></td><td>npm</td>
-            <td><span class="badge todo">Not started</span></td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· awaiting credentials</span></td>
           </tr>
           <tr>
             <td>Dart</td><td><code>kryon</code></td><td>pub.dev</td>
-            <td><span class="badge todo">Not started</span></td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· awaiting credentials</span></td>
           </tr>
           <tr>
             <td>Java</td><td><code>io.github.piyush-mishra-00:kryon</code></td><td>Maven Central</td>
-            <td><span class="badge todo">Not started</span></td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· awaiting credentials</span></td>
           </tr>
           <tr>
             <td>Kotlin</td><td><code>io.github.piyush-mishra-00:kryon-kotlin</code></td><td>Maven Central</td>
-            <td><span class="badge todo">Not started</span></td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· awaiting credentials</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <p class="muted" style="margin-top:1.25rem">
+      “Awaiting credentials” means the package builds, tests and validates and the release
+      workflow is configured — the registry account is a manual step, not unfinished code.
       The specification is language-neutral and the corpus is one shared file, so an SDK
-      cannot quietly disagree — it either passes a case, or skips it with a reason.
+      cannot quietly disagree: it either passes a case, or skips it with a reason.
       <a href="https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/sdk-design.md">How that works</a>.
     </p>
   </div>
@@ -486,16 +490,18 @@ Container / VM     unprivileged user, destroyed after use</code></pre>
       <table>
         <thead><tr><th>Phase</th><th>What</th><th>Status</th></tr></thead>
         <tbody>
-          <tr><td>0</td><td>Foundation — repository, CI, docs, website</td><td><span class="badge done">Done</span></td></tr>
-          <tr><td>1</td><td>Python command execution and process streaming</td><td><span class="badge done">Done</span></td></tr>
-          <tr><td>2</td><td>Cross-language specification and conformance corpus</td><td><span class="badge done">Done</span></td></tr>
-          <tr><td>3</td><td>PTY on POSIX</td><td><span class="badge warn">Next</span></td></tr>
-          <tr><td>4</td><td>PTY on Windows (ConPTY)</td><td><span class="badge todo">Planned</span></td></tr>
-          <tr><td>5</td><td>TypeScript SDK</td><td><span class="badge todo">Planned</span></td></tr>
-          <tr><td>6</td><td>Terminal emulator</td><td><span class="badge todo">Planned</span></td></tr>
-          <tr><td>7–8</td><td>Dart, Java and Kotlin SDKs</td><td><span class="badge todo">Planned</span></td></tr>
-          <tr><td>9–10</td><td>WebSocket transport and web terminal</td><td><span class="badge todo">Planned</span></td></tr>
-          <tr><td>11–12</td><td>SSH adapter, production hardening</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>0–2</td><td>Foundation, specification, conformance corpus</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>1</td><td>Python SDK</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>3</td><td>TypeScript SDK</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>4</td><td>Dart SDK</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>5</td><td>Java SDK</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>6</td><td>Kotlin SDK</td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>7–8</td><td>Conformance across all five, and <code>1.0.0</code></td><td><span class="badge done">Done</span></td></tr>
+          <tr><td>9</td><td>PTY on POSIX</td><td><span class="badge warn">Next</span></td></tr>
+          <tr><td>10</td><td>PTY on Windows (ConPTY)</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>11</td><td>Terminal emulator</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>12–13</td><td>WebSocket transport and web terminal</td><td><span class="badge todo">Planned</span></td></tr>
+          <tr><td>14–15</td><td>SSH adapter, production hardening</td><td><span class="badge todo">Planned</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -512,8 +518,9 @@ Container / VM     unprivileged user, destroyed after use</code></pre>
   <div class="wrap">
     <h2>Community</h2>
     <p class="section-lede">
-      Kryon is early. The most valuable contribution right now is a second SDK — it is what
-      turns the specification from a document into a guarantee.
+      Five independent implementations turned the specification from a document into a
+      guarantee — and found three real bugs doing it. What the project needs now is people
+      using it and saying where the model is still wrong.
     </p>
 
     <div class="grid">
@@ -532,6 +539,11 @@ Container / VM     unprivileged user, destroyed after use</code></pre>
       <a class="card" href="https://github.com/PIYUSH-MISHRA-00/kryon/security/advisories/new">
         <h3>Report a vulnerability</h3>
         <p>Privately, through GitHub security advisories. Never in a public issue.</p>
+      </a>
+      <a class="card" href="https://buymeacoffee.com/piyushmishra00">
+        <h3>Buy me a coffee ☕</h3>
+        <p>Kryon is built by one person and given away under Apache-2.0. Entirely optional,
+          and it changes nothing about the licence or the roadmap.</p>
       </a>
     </div>
   </div>
@@ -580,8 +592,9 @@ Container / VM     unprivileged user, destroyed after use</code></pre>
       </div>
     </div>
     <div class="fine">
-      <span>Kryon — Apache-2.0 licensed. Built by <a href="https://github.com/PIYUSH-MISHRA-00">PIYUSH-MISHRA-00</a>.</span>
-      <span class="mono">alpha · 0.1.0 · not a sandbox</span>
+      <span>Kryon — Apache-2.0 licensed. Built by <a href="https://github.com/PIYUSH-MISHRA-00">PIYUSH-MISHRA-00</a>
+        · <a href="https://buymeacoffee.com/piyushmishra00">buy me a coffee</a></span>
+      <span class="mono">1.0.0 · five SDKs · not a sandbox</span>
     </div>
   </div>
 </footer>

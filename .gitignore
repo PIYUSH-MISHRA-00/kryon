@@ -23,12 +23,14 @@ node_modules/
 .dart_tool/
 .packages
 pubspec.lock
+doc/api/
 
 # JVM
 .gradle/
 build/
 *.class
 out/
+!gradle/wrapper/gradle-wrapper.jar
 
 # Editors / OS
 .idea/

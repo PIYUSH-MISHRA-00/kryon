@@ -116,6 +116,26 @@ Python, has failed differently but just as badly.
 6. Only then update the [status table](../../spec/README.md#implementation-status) — the
    corpus result is what entitles you to change that row.
 
+### What actually happened when this was done four times
+
+The process above is not theoretical. Writing the TypeScript, Dart, Java and Kotlin SDKs against a
+specification derived from Python surfaced three real bugs and two specification gaps:
+
+- Python's platform-skip marks were misapplied, so four orphaned-process tests silently never ran.
+  Nobody noticed until the same assertions were written a second time in another language.
+- Dart's `includeParentEnvironment` quietly restored variables the caller had removed.
+- Kotlin's cancellation could not interrupt a blocking `waitFor`, so cancelling waited out the
+  child — a direct violation of the specification's cancellation rule.
+- The corpus never said what unit its durations were in. Four runners had to convert, and the
+  answer had to be written down before they agreed.
+- `setup_env` assumed a runner could set its own process environment. Dart and the JVM cannot, and
+  the honest answer turned out to be "skip with a reason", not "pass it through `env`" — which
+  would have converted a test about inheritance into a test about merging and left a green tick
+  over nothing.
+
+That is what a second implementation buys, and why more of them remain the highest-value
+contribution.
+
 Full process in [`CONTRIBUTING.md`](../../CONTRIBUTING.md).
 
 ## When the specification is wrong
