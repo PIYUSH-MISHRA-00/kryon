@@ -1,279 +1,198 @@
-<div align="center">
-
-# Kryon
+# Kryon for Java
 
 **Powerful terminal execution, everywhere.**
 
-Run operating-system commands, drive interactive processes, and stream their output —
-with one conceptual API across Python, TypeScript, Dart, Java and Kotlin.
+Run operating-system commands, stream their output, and manage the processes behind them —
+with an API designed so the dangerous thing is the one you have to ask for by name.
 
-[![CI](https://github.com/PIYUSH-MISHRA-00/kryon/actions/workflows/ci.yml/badge.svg)](https://github.com/PIYUSH-MISHRA-00/kryon/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/badge/maven--central-kryon-blue.svg)](https://central.sonatype.com/artifact/io.github.piyush-mishra-00/kryon)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/kryon.svg)](https://pypi.org/project/kryon/)
-[![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](CHANGELOG.md)
+[![Java](https://img.shields.io/badge/java-%E2%89%A517-orange.svg)](build.gradle.kts)
 
-[Website](https://piyush-mishra-00.github.io/kryon/) · [Documentation](docs/) · [Specification](spec/) · [Security](docs/security/threat-model.md) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md)
+This is the Java SDK of [Kryon](https://github.com/PIYUSH-MISHRA-00/kryon). **Zero runtime
+dependencies** — it orchestrates the JDK's own `ProcessBuilder` and nothing else.
 
-</div>
-
----
-
-> ### Project status
->
-> **`1.0.0`.** All **five SDKs** implement command execution and process streaming, and all five
-> pass the same [conformance corpus](tests/conformance/cases.json) on Linux, macOS and Windows.
->
-> **PTY, terminal emulation and remote transports are specified and not implemented.** They are
-> `1.x` work — see the [roadmap](ROADMAP.md). Nothing in this README describes a feature that does
-> not exist; where something is planned, it says so.
->
-> Python is published to PyPI. The other four are built, tested and awaiting registry
-> credentials — the [status table](#install) says exactly where each one stands.
-
-## What it does
-
-```python
-from kryon import Runtime
-
-runtime = Runtime(encoding="utf-8", timeout=30)
-
-# Run it and tell me what happened.
-result = runtime.execute("git", ["status", "--porcelain"])
-print(result.stdout, result.exit_code, result.ok)
-
-# Start it and let me talk to it.
-with runtime.spawn("pip", ["install", "numpy"]) as proc:
-    for stream, chunk in proc:
-        print(chunk.decode(), end="")
-```
-
-The same two operations, in each language's own idiom:
-
-<table>
-<tr><td>
-
-```ts
-// TypeScript
-const result = await runtime.execute(
-  "git", ["status", "--porcelain"]);
-
-await using proc = await runtime.spawn("npm", ["ci"]);
-for await (const { data } of proc.output) { … }
-```
-
-</td><td>
-
-```kotlin
-// Kotlin
-val result = runtime.execute(
-    "git", listOf("status", "--porcelain"))
-
-runtime.spawn("gradle", listOf("build")).use { proc ->
-    proc.output.collect { print(it.text()) }
-}
-```
-
-</td></tr>
-<tr><td>
-
-```dart
-// Dart
-final result = await runtime.execute(
-    'git', ['status', '--porcelain']);
-
-final proc = await runtime.spawn('dart', ['run', 'w.dart']);
-await for (final chunk in proc.output) { … }
-```
-
-</td><td>
-
-```java
-// Java
-var result = runtime.execute(
-        "git", List.of("status", "--porcelain"));
-
-try (var proc = runtime.spawn("mvn", List.of("verify"))) {
-    for (var chunk : proc.output()) { … }
-}
-```
-
-</td></tr>
-</table>
-
-## Why it exists
-
-Running a command is easy in every language. Doing it *well* is not, and every ecosystem
-re-solves the same problems badly — the convenient API hands your string to a shell, the timeout
-returns without killing anything, a chatty command exhausts memory, and the error throws away the
-stderr that explained it.
-
-Kryon is not "a better `subprocess`". It is **one well-specified execution model**, implemented
-natively in five languages, verified by one shared test corpus.
-
-**If you run one command occasionally in one language, use your standard library.** That is the
-honest answer, and [it is written down](docs/guides/why-kryon.md). Kryon earns its place when you
-are streaming, enforcing real limits, handling untrusted input, or doing any of it from more than
-one language.
-
-## What makes it different
-
-### The dangerous thing has a different name
-
-```python
-runtime.execute("wc", ["-l", user_input])        # safe — one literal argument, no shell
-runtime.execute_shell(f"wc -l {user_input}")     # command injection, and it looks like it
-```
-
-There is no `shell=True` flag in any SDK, and
-[the specification forbids one](spec/execution.md#2-argument-vector-execution-is-the-default).
-A boolean among a dozen options is easy to set by accident and easy to miss in review; a
-different method name is visible in every diff.
-
-### Failing to start is an error. Failing while running is a result.
-
-A missing executable raises — nothing ran, so there is nothing to report. A process that exited
-`1` returns a result, because `grep` exits `1` to mean "no match" and raising on that makes
-ordinary code wrong by default. `check` opts into the strict style, and every error it raises
-carries the result it came from, stderr included.
-
-### Limits that actually hold
-
-Timeouts terminate, wait a documented grace period, then kill — including a process that ignores
-`SIGTERM`. Output caps bound memory *during* the flood rather than after buffering everything.
-Leaving a scope, cancelling a task, or a timeout firing all terminate the child **before** control
-returns. Kryon never hands you back the flow of execution while leaving a process running.
-
-### Five SDKs, one behaviour — enforced, not promised
-
-Every SDK runs the same [conformance corpus](tests/conformance/cases.json): one JSON file at the
-repository root, never forked per language, where each case records *what would break in the real
-world* if it regressed. An SDK that cannot satisfy a case skips it with a reason — it never
-quietly drops it. [How that works](docs/architecture/sdk-design.md).
-
-### Nearly zero dependencies
-
-Python, TypeScript, Dart and Java have **no runtime dependencies at all**. Kotlin has exactly one
-— `kotlinx-coroutines-core` — because coroutines are how asynchronous Kotlin is written.
-
-## Architecture
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│ 5. Renderer            web · Flutter · JVM · native          │  planned
-├──────────────────────────────────────────────────────────────┤
-│ 4. Terminal emulator   ANSI/VT parser + screen state         │  specified
-│    Pure state machine. Bytes in, screen out. No I/O.         │
-├──────────────────────────────────────────────────────────────┤
-│ 3. Transport           local · WebSocket · SSH               │  specified
-├──────────────────────────────────────────────────────────────┤
-│ 2. PTY engine          openpty · ConPTY                      │  specified
-├──────────────────────────────────────────────────────────────┤
-│ 1. Execution engine    spawn · streams · signals · lifecycle │  IMPLEMENTED × 5
-└──────────────────────────────────────────────────────────────┘
-```
-
-Each layer is useful without the ones above it. Running `git status` needs no terminal. A web
-terminal that renders with an existing component needs a PTY but not an emulator. Turning a
-recorded CI log into a rendered screen needs the emulator and nothing else.
-
-[Full architecture](docs/architecture/overview.md).
+> **`1.0.0`.** Command execution and process streaming are implemented and pass the
+> [cross-language conformance corpus](../tests/conformance/cases.json) on Linux, macOS and
+> Windows. PTY, terminal emulation and remote transports are specified but **not implemented**.
 
 ## Install
 
-| Ecosystem | Install | Status |
-|---|---|---|
-| **Python** | `pip install kryon` | ✅ **Published to PyPI** |
-| **TypeScript** | `npm install kryon` | ✅ Implemented · awaiting npm credentials |
-| **Dart** | `dart pub add kryon` | ✅ Implemented · awaiting pub.dev credentials |
-| **Java** | `io.github.piyush-mishra-00:kryon:1.0.0` | ✅ Implemented · awaiting Maven Central credentials |
-| **Kotlin** | `io.github.piyush-mishra-00:kryon-kotlin:1.0.0` | ✅ Implemented · awaiting Maven Central credentials |
+Gradle:
 
-"Awaiting credentials" means exactly that: the packages build, test and validate, and the release
-workflows are configured — the registry accounts are a manual step. See
-[releases](docs/development/releases.md). Until they land, install those four from source:
-
-```bash
-git clone https://github.com/PIYUSH-MISHRA-00/kryon.git
+```kotlin
+implementation("io.github.piyush-mishra-00:kryon:1.0.0")
 ```
 
-## Security
+Maven:
 
-**Kryon is not a sandbox.** It runs what you tell it to run, with the privileges you already
-have. Its timeouts and output caps are resource management — they keep *your* process healthy;
-they do not contain a hostile one. Isolation is the job of a container, a VM or an unprivileged
-account.
+```xml
+<dependency>
+  <groupId>io.github.piyush-mishra-00</groupId>
+  <artifactId>kryon</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
-Three rules, expanded in the [threat model](docs/security/threat-model.md):
+Requires Java 17 or newer.
 
-1. Never build an `execute_shell` string from untrusted input.
-2. Never let untrusted input choose the executable.
-3. Never expose command execution to a browser without authentication, authorization, a command
-   allowlist **and** OS-level isolation — [all four](docs/security/remote-execution.md).
+> **On the coordinates.** The groupId is `io.github.piyush-mishra-00`, which is the namespace
+> verifiable through GitHub account ownership. The *package* is `io.github.piyushmishra00.kryon`
+> — hyphens are legal in a Maven groupId and illegal in a Java package identifier, so the two
+> differ by exactly those characters.
 
-Report vulnerabilities privately: [Security advisories](https://github.com/PIYUSH-MISHRA-00/kryon/security/advisories/new).
-Never in a public issue. See [`SECURITY.md`](SECURITY.md).
+## Run something
 
-## Platform support
+```java
+import io.github.piyushmishra00.kryon.*;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.List;
 
-| | Linux | macOS | Windows | Android | iOS | Browser |
-|---|---|---|---|---|---|---|
-| Process execution | ✅ | ✅ | ✅ | Planned | ❌ Not possible | ❌ Needs a backend |
-| Streaming, limits, cancellation | ✅ | ✅ | ✅ | Planned | ❌ | ❌ |
-| `terminate()` | ✅ `SIGTERM` | ✅ `SIGTERM` | ⚠️ No graceful stop | Planned | ❌ | ❌ |
-| Arbitrary signals | ✅ (Python, Dart) | ✅ | ❌ No signals exist | Planned | ❌ | ❌ |
-| PTY | ⬜ Planned | ⬜ Planned | ⬜ Planned (ConPTY) | ⬜ Planned | ❌ | ❌ Backend |
-| Terminal emulation | ⬜ Planned | ⬜ Planned | ⬜ Planned | ⬜ Planned | ⬜ Planned | ⬜ Planned |
+Runtime runtime = new Runtime(ExecutionOptions.builder()
+        .charset(StandardCharsets.UTF_8)
+        .timeout(Duration.ofSeconds(30))
+        .build());
 
-Windows has no `SIGTERM`: `terminate()` there is the same operation as `kill()`, and the child
-gets no chance to flush. On the JVM, `signal()` supports only `SIGTERM` and `SIGKILL` because the
-JDK exposes nothing else. iOS does not permit spawning child processes at all — a platform rule,
-not a missing feature.
+ExecutionResult result = runtime.execute("git", List.of("status", "--porcelain"));
 
-[Full matrix and the details](docs/guides/platform-support.md).
+System.out.println(result.stdout());
+System.out.println(result.exitCode().orElseThrow() + " " + result.ok() + " " + result.duration());
+```
 
-## Documentation
+## Talk to something
 
-| | |
-|---|---|
-| [Overview](docs/getting-started/overview.md) | What Kryon is and is not |
-| [Your first commands](docs/getting-started/first-terminal.md) | From one command to a live stream |
-| [Architecture](docs/architecture/overview.md) | The five layers and why they are separate |
-| [SDK design](docs/architecture/sdk-design.md) | How five SDKs stay one product |
-| [Threat model](docs/security/threat-model.md) | Read before deploying anything |
-| [Why Kryon?](docs/guides/why-kryon.md) | Honest comparison, including when not to use it |
-| [Specification](spec/README.md) | The normative language-neutral contract |
-| [Examples](examples/) | Runnable, not illustrative |
+```java
+try (KryonProcess proc = runtime.spawn("mvn", List.of("verify"))) {
+    for (OutputChunk chunk : proc.output()) {
+        var target = chunk.stream() == StreamKind.STDERR ? System.err : System.out;
+        target.write(chunk.data());
+        target.flush();
+    }
+    ExecutionResult result = proc.await();
+    System.out.println("exit " + result.exitCode().orElseThrow());
+}
+```
 
-Per-SDK reference: [Python](python/README.md) · [TypeScript](javascript/README.md) ·
-[Dart](dart/README.md) · [Java](java/README.md) · [Kotlin](kotlin/README.md)
+`KryonProcess` is `AutoCloseable`. Leaving the try-with-resources block terminates the process
+and closes every pipe, whether you left normally or by exception.
 
-## Roadmap
+## Two things worth knowing
 
-Phases 0–8 are done: foundation, specification, conformance, and all five SDKs at execution
-parity. Next: **PTY on POSIX**, then ConPTY, then the terminal emulator.
+### Arguments are never interpreted
 
-Full plan, honestly scoped, in [`ROADMAP.md`](ROADMAP.md).
+```java
+runtime.execute("wc", List.of("-l", userInput));      // safe, whatever userInput is
+runtime.executeShell("wc -l " + userInput);           // command injection
+```
 
-## Contributing
+`execute` passes an argument vector to the operating system. No shell is involved, so nothing in
+an argument can expand, glob, chain or substitute. Shell semantics live behind `executeShell` — a
+**separate method name**, not a `shell(true)` builder call, because a boolean among a dozen
+options is easy to set by accident and easy to miss in review.
 
-Contributions are welcome. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), the
-[development setup](docs/development/setup.md), and the
-[testing guide](docs/development/testing.md).
+This also rules out `Runtime.getRuntime().exec(String)`, which splits its argument on whitespace
+and has surprised generations of Java developers.
 
-- [Discussions](https://github.com/PIYUSH-MISHRA-00/kryon/discussions) — questions and ideas
-- [Issues](https://github.com/PIYUSH-MISHRA-00/kryon/issues) — bugs and proposals
-- [`SUPPORT.md`](SUPPORT.md) — which is which
-- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) — how we behave here
+### Kryon is not a sandbox
 
-## Support the project
+Timeouts and output caps manage resources. They do not contain a hostile program. Isolation is a
+container, a VM, or an unprivileged account. See
+[the threat model](../docs/security/threat-model.md).
 
-Kryon is built and maintained by one person, in their own time, and given away under Apache-2.0.
-If it saves you an afternoon, you can
-[**buy me a coffee** ☕](https://buymeacoffee.com/piyushmishra00).
+## API
 
-Entirely optional, and it changes nothing about the licence, the roadmap or how issues are
-triaged.
+### `new Runtime(ExecutionOptions defaults)`
+
+Holds default options; safe to share across threads. Every call may override them with a third
+argument. `env` merges with the runtime's `env`; everything else is replaced, and a boolean set
+explicitly to `false` really does turn a default off.
+
+| Builder method | Default | Meaning |
+|---|---|---|
+| `cwd(Path)` | inherited | Working directory. A path that is not a directory is an error, never a silent fallback. |
+| `env(name, value)` | none | Merged over the inherited environment. A `null` value removes it. |
+| `clearEnv(boolean)` | `false` | Start from an empty environment. With `env`, this is an allowlist. |
+| `stdin(String \| byte[])` | none | Written to stdin, after which stdin is closed. |
+| `timeout(Duration)` | none | On expiry: terminate, wait `killGrace`, kill. |
+| `maxOutputBytes(long)` | none | Per-stream cap, enforced during the flood. |
+| `charset(Charset)` | none | Used to decode `stdout()`/`stderr()`. |
+| `check(boolean)` | `false` | Throw on an unsuccessful result. |
+| `killGrace(Duration)` | `5s` | Between the polite stop and the forced kill. |
+
+### `ExecutionResult`
+
+`executable()`, `arguments()`, `exitCode()`, `signal()`, `stdout()`, `stderr()`,
+`stdoutBytes()`, `stderrBytes()`, `duration()`, `termination()`, `pid()`, `stdoutTruncated()`,
+`stderrTruncated()`, `ok()` and `checked()`.
+
+`termination()` is `EXITED`, `SIGNALED`, `TIMEOUT`, `CANCELLED` or `OUTPUT_LIMIT`. The
+Kryon-initiated reasons win over the kernel's account: a process killed for exceeding its timeout
+reports `TIMEOUT`, because that is what you need in order to decide whether to retry.
+
+### `KryonProcess`
+
+`pid()`, `running()`, `exitCode()`, `write()`, `closeStdin()`, `output()`, `signal()`,
+`terminate()`, `kill()`, `await()`, `close()`.
+
+`output()` is a one-shot `Iterable<OutputChunk>` drained from a bounded queue. Stop consuming and
+Kryon stops reading, so the child blocks instead of your heap growing.
+
+### Errors
+
+The rule: **failing to start is an error, failing while running is a result.**
+
+`CommandNotFoundException`, `PermissionDeniedException`, `ProcessStartFailedException` and
+`InvalidArgumentsException` are thrown — no process ran. `ProcessFailedException`,
+`ProcessTimeoutException`, `ProcessCancelledException` and `ResourceLimitExceededException` are
+thrown only under `check(true)`, and each carries the `ExecutionResult` it came from via
+`result()`. All extend `KryonException`, which extends `RuntimeException`: a checked exception on
+every `execute` call would push callers towards catching and ignoring, which is worse.
+
+### A naming note
+
+The output-stream enum is `StreamKind`, not `Stream` or `OutputStream`. Both of those collide
+with types practically every Java file already imports, and a Kryon type sharing their simple name
+would force callers to fully qualify one of them forever.
+
+## Platform notes
+
+| | Linux | macOS | Windows |
+|---|---|---|---|
+| `execute` / `spawn` | Yes | Yes | Yes |
+| `signal(int)` | `SIGTERM`/`SIGKILL` only | Same | `UnsupportedPlatformException` |
+| `terminate()` | `SIGTERM` | `SIGTERM` | `TerminateProcess` — no graceful stop |
+| `result.signal()` | Derived, see below | Derived | Always empty |
+
+Two JVM-specific limitations, stated rather than hidden:
+
+**`signal(int)` supports only 15 and 9.** The JDK's `Process` API exposes `destroy()` and
+`destroyForcibly()` and nothing else. Sending `SIGHUP` or `SIGUSR1` would need a native call this
+library deliberately does not make.
+
+**`signal()` on a result is inferred, not read.** The JVM reports a signal death as
+`128 + signum` and gives no signal number of its own, so Kryon derives it from the exit value. A
+program that genuinely exits `143` is indistinguishable from one killed by `SIGTERM`. This is a
+JDK limitation; the Python and Dart SDKs report the real signal.
+
+## Develop
+
+```bash
+cd java
+./gradlew build          # compile, javadoc, sources jar, tests
+./gradlew test
+./gradlew publishToMavenLocal
+```
+
+The compiler runs with `-Xlint:all -Werror`, so a warning fails the build. Tests drive a small
+[helper program](src/test/java/io/github/piyushmishra00/kryon/ConformanceHelper.java) rather than
+real system commands, so they behave the same on every platform.
 
 ## License
 
-[Apache-2.0](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).
+
+---
+
+If Kryon saves you time, you can
+[buy me a coffee](https://buymeacoffee.com/piyushmishra00).
