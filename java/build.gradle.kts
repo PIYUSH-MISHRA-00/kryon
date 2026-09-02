@@ -138,9 +138,26 @@ signing {
         else String(Base64.getMimeDecoder().decode(value.trim()))
     }
     val password = providers.environmentVariable("SIGNING_PASSWORD").orNull
-    isRequired = key != null
-    if (key != null) {
-        useInMemoryPgpKeys(key, password)
-        sign(publishing.publications["maven"])
+
+    // Two ways to sign, because they suit two very different situations.
+    //
+    // -PuseGpgCmd delegates to the local gpg, which prompts for the passphrase through
+    // its own agent. Nothing is exported, nothing is stored, and the private key never
+    // leaves the keyring. This is the right way to sign from your own machine.
+    //
+    // SIGNING_KEY/SIGNING_PASSWORD is for CI, where there is no agent and no human to
+    // answer a prompt.
+    val useGpgCmd = providers.gradleProperty("useGpgCmd").isPresent
+
+    isRequired = useGpgCmd || key != null
+    when {
+        useGpgCmd -> {
+            useGpgCmd()
+            sign(publishing.publications["maven"])
+        }
+        key != null -> {
+            useInMemoryPgpKeys(key, password)
+            sign(publishing.publications["maven"])
+        }
     }
 }
