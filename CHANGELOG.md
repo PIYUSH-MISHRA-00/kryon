@@ -17,7 +17,7 @@ Nothing yet.
 The execution API is now stable. Four new SDKs join Python, and all five pass the same
 conformance corpus on Linux, macOS and Windows.
 
-### Added — TypeScript SDK (`kryon` on npm)
+### Added — TypeScript SDK (`kryon-exec` on npm)
 
 - `Runtime.execute` / `executeShell` / `spawn`, with `AbortSignal` cancellation.
 - `KryonProcess` — output as an async iterable over a bounded queue with real backpressure
@@ -27,6 +27,10 @@ conformance corpus on Linux, macOS and Windows.
   `node:child_process` into a web bundle by accident.
 - ESM, generated declarations, zero runtime dependencies, Node 20+.
 - Tests use Node's built-in runner — no test framework dependency.
+- **Published as `kryon-exec`, not `kryon`.** The npm registry refuses the name `kryon`
+  with `403 — Package name too similar to existing package cron`. That is a typosquatting
+  filter, not a name clash: the name is unclaimed there, and unclaimable. It is `kryon` on
+  PyPI and pub.dev. See [releases](docs/development/releases.md#package-names-and-the-one-conflict).
 
 ### Added — Dart SDK (`kryon` on pub.dev)
 

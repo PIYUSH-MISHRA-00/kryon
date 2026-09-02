@@ -398,20 +398,21 @@ asyncio.<span class="t-fn">run</span>(<span class="t-fn">main</span>())</code></
           </tr>
           <tr>
             <td>Java</td><td><code>io.github.piyush-mishra-00:kryon</code></td><td>Maven Central</td>
-            <td><span class="badge done">Implemented</span> <span class="muted">· awaiting credentials</span></td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· pending upload</span></td>
           </tr>
           <tr>
             <td>Kotlin</td><td><code>io.github.piyush-mishra-00:kryon-kotlin</code></td><td>Maven Central</td>
-            <td><span class="badge done">Implemented</span> <span class="muted">· awaiting credentials</span></td>
+            <td><span class="badge done">Implemented</span> <span class="muted">· pending upload</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <p class="muted" style="margin-top:1.25rem">
-      Python, TypeScript and Dart are published. The two JVM artifacts build, test and
-      validate and the release workflow is configured — Maven Central is a manual step, not
-      unfinished code. On npm the package is <code>kryon-exec</code>, because the registry
+      Python, TypeScript and Dart are published. The two JVM artifacts are built and
+      GPG-signed, with every signature verified against the public key on the keyserver —
+      the Maven Central upload is a manual step, not unfinished code. On npm the package
+      is <code>kryon-exec</code>, because the registry
       refuses <code>kryon</code> as too similar to <code>cron</code>.
       The specification is language-neutral and the corpus is one shared file, so an SDK
       cannot quietly disagree: it either passes a case, or skips it with a reason.
