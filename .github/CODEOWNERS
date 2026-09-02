@@ -1,0 +1,13 @@
+# Every change is reviewed by the project lead. See GOVERNANCE.md — this is honest
+# rather than aspirational: Kryon currently has one maintainer, and that is a known
+# single point of failure rather than a policy.
+
+*                       @PIYUSH-MISHRA-00
+
+# Areas where a mistake is expensive, listed so that a future second maintainer
+# inherits the emphasis rather than having to rediscover it.
+/spec/                  @PIYUSH-MISHRA-00
+/tests/conformance/     @PIYUSH-MISHRA-00
+/docs/security/         @PIYUSH-MISHRA-00
+/SECURITY.md            @PIYUSH-MISHRA-00
+/.github/workflows/     @PIYUSH-MISHRA-00

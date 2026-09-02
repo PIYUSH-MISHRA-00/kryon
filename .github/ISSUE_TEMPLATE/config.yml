@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/PIYUSH-MISHRA-00/kryon/security/advisories/new
+    about: Report privately. Never open a public issue for an undisclosed vulnerability.
+  - name: Question or idea
+    url: https://github.com/PIYUSH-MISHRA-00/kryon/discussions
+    about: Ask how to do something, or float a proposal before it becomes code.
+  - name: Documentation
+    url: https://github.com/PIYUSH-MISHRA-00/kryon/tree/main/docs
+    about: Most questions are already answered here.

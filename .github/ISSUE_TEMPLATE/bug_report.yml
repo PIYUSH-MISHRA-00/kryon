@@ -1,0 +1,103 @@
+name: Bug report
+description: Something behaves differently from what is documented or specified
+title: "[bug] "
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting.
+
+        **If this is a security vulnerability, stop here** and use
+        [private advisories](https://github.com/PIYUSH-MISHRA-00/kryon/security/advisories/new)
+        instead. Do not describe it publicly.
+
+  - type: dropdown
+    id: sdk
+    attributes:
+      label: SDK
+      options:
+        - Python
+        - Specification / conformance corpus
+        - Documentation
+        - Website
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Kryon version
+      description: "`kryon.__version__`, or the commit if you installed from source"
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and language version
+      placeholder: "Ubuntu 24.04, Python 3.12.3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: >
+        The smallest program that shows the problem. This is the single most useful thing
+        in a bug report — a process bug that cannot be reproduced usually cannot be fixed.
+      render: python
+      placeholder: |
+        from kryon import Runtime
+
+        runtime = Runtime()
+        result = runtime.execute("...")
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: If the specification or documentation says something different, link to it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Include the full error and traceback if there was one.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: consistency
+    attributes:
+      label: Does it reproduce every time?
+      description: >
+        Intermittent process and timing bugs are worth chasing hardest, and knowing it is
+        intermittent is half the information.
+      options:
+        - Every time
+        - Most of the time
+        - Occasionally
+        - Once, and I could not reproduce it
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: category
+    attributes:
+      label: Does it involve any of these?
+      description: These paths get reviewed harder. Ticking a box is helpful, not an accusation.
+      options:
+        - label: A process was left running when it should have been terminated
+        - label: An argument was interpreted rather than passed literally
+        - label: A timeout or output limit did not hold
+        - label: Something appeared in an error message that should not have (environment, stdin, credentials)
+        - label: Behaviour differs between platforms
+        - label: Behaviour differs between the sync and async runtimes

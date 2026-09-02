@@ -1,0 +1,64 @@
+name: Feature request
+description: Propose a new capability or an API change
+title: "[feature] "
+labels: ["enhancement", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before writing this, please check [ROADMAP.md](https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/ROADMAP.md),
+        including the "deliberately not planned" section at the bottom.
+
+        For anything large, a [discussion](https://github.com/PIYUSH-MISHRA-00/kryon/discussions)
+        first will save you effort.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: >
+        What are you unable to do today? Describe the situation, not the solution — the
+        best proposals often get solved a different way.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would the API look like? Sketch the code you wish you could write.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you tried instead
+      description: Workarounds, other libraries, or why the current API does not cover it.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This should behave the same in every SDK (so it needs a specification change and a conformance case)
+        - label: This is specific to one ecosystem's idioms
+        - label: This changes existing behaviour rather than adding to it
+
+  - type: textarea
+    id: security
+    attributes:
+      label: Security impact
+      description: >
+        Does this make it easier to run something unintended, interpolate untrusted input,
+        or weaken a limit? An honest "I think it might" is more useful than "none".
+      placeholder: "None that I can see, because..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Are you offering to implement it?
+      options:
+        - label: I would like to implement this

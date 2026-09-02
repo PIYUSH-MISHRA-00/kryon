@@ -1,0 +1,60 @@
+name: SDK proposal
+description: Offer to implement Kryon for a language
+title: "[sdk] "
+labels: ["sdk", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the most valuable contribution available — a second independent
+        implementation is what turns the specification from a document into a guarantee.
+
+        Please read [adding an SDK](https://github.com/PIYUSH-MISHRA-00/kryon/blob/main/docs/architecture/sdk-design.md#adding-an-sdk)
+        first, and open this before starting so work is not duplicated.
+
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: TypeScript
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: read
+    attributes:
+      label: Preparation
+      options:
+        - label: I have read spec/execution.md, spec/process.md and spec/errors.md
+          required: true
+        - label: I have read spec/conformance.md and understand the helper contract
+          required: true
+        - label: I understand the corpus is shared and never forked per language
+          required: true
+
+  - type: textarea
+    id: design
+    attributes:
+      label: How the API will look in this language
+      description: >
+        Semantics are fixed by the specification; syntax should be idiomatic. Show the
+        equivalent of execute and spawn as they would read to someone native to this
+        ecosystem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: concerns
+    attributes:
+      label: Where the specification does not fit this language
+      description: >
+        This is the useful part. Anywhere the specification is awkward or unimplementable
+        here is somewhere the specification is probably wrong, and changing it is the
+        expected outcome — not a quiet deviation in one SDK.
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies you expect to need
+      description: Ideally none. If some are needed, note licence and maintenance status.
+      placeholder: "None — the standard library covers process execution."

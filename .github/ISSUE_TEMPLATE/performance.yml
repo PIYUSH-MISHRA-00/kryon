@@ -1,0 +1,60 @@
+name: Performance issue
+description: Something is slower or heavier than it should be
+title: "[perf] "
+labels: ["performance", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Measurements first, please. Kryon's position is measure before optimising, and that
+        applies to reports as much as to fixes.
+
+  - type: input
+    id: operation
+    attributes:
+      label: Which operation
+      placeholder: "Runtime.execute() with max_output_bytes set"
+    validations:
+      required: true
+
+  - type: textarea
+    id: measurement
+    attributes:
+      label: What you measured
+      description: Numbers, how you obtained them, and the machine they came from.
+      placeholder: |
+        1000 sequential execute() calls of the helper's `echo` verb:
+          Kryon:            4.2s  (peak RSS 48 MB)
+          subprocess.run:   3.1s  (peak RSS 22 MB)
+        Ubuntu 24.04, Python 3.12, 8 cores, warm cache, median of 5 runs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Benchmark code
+      render: python
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and language version
+      placeholder: "Ubuntu 24.04, Python 3.12.3"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: dimension
+    attributes:
+      label: What is the problem
+      options:
+        - Wall-clock time
+        - Memory
+        - Streaming throughput
+        - Startup overhead
+        - Behaviour under many concurrent processes
+    validations:
+      required: true

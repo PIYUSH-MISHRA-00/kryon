@@ -1,0 +1,41 @@
+name: Documentation
+description: Something in the docs is wrong, unclear, or missing
+title: "[docs] "
+labels: ["documentation", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Documentation that implies a security property Kryon does not have is a **security
+        bug**, not a documentation nitpick. Please say so if that is what you found.
+
+  - type: input
+    id: where
+    attributes:
+      label: Which page
+      description: A link or a file path
+      placeholder: docs/security/threat-model.md
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem
+      options:
+        - Wrong — it says something untrue
+        - Overstated — it implies a capability or guarantee that does not exist
+        - Unclear — I could not work out what it meant
+        - Missing — something is not documented at all
+        - Out of date — the code changed and this did not
+        - Broken link or formatting
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: What is wrong, and what would be right
+      description: Quote the passage if you can. A suggested replacement is very welcome.
+    validations:
+      required: true
