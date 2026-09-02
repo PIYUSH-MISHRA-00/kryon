@@ -1,0 +1,319 @@
+{
+  "$schema": "./cases.schema.json",
+  "version": "0.1",
+  "description": "The shared Kryon conformance corpus. Every SDK runs these against its own implementation via the helper contract in spec/conformance.md. Cases are language-neutral by construction: they never reference echo, sleep or /bin/sh, because those differ across platforms and half of them do not exist on Windows.",
+  "cases": [
+    {
+      "id": "execute.stdout.simple",
+      "api": "execute",
+      "args": ["echo", "hello"],
+      "options": { "encoding": "utf-8" },
+      "expect": { "exit_code": 0, "termination": "EXITED", "ok": true, "stdout": "hello\n", "stderr": "" },
+      "why": "The single most basic promise Kryon makes. If this regresses, nothing else matters."
+    },
+    {
+      "id": "execute.args.vector_is_literal",
+      "api": "execute",
+      "args": ["echo", "$HOME && rm -rf / ; `whoami`"],
+      "options": { "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "$HOME && rm -rf / ; `whoami`\n" },
+      "why": "The security guarantee of the whole project: execute() never lets the shell see an argument. If this ever passes through a shell, every caller interpolating user input has a command-injection hole."
+    },
+    {
+      "id": "execute.args.empty_string_preserved",
+      "api": "execute",
+      "args": ["echo", "", "after"],
+      "options": { "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": " after\n" },
+      "why": "An empty argument is a real argument. Dropping it silently shifts every later positional argument, which is the kind of bug that corrupts data rather than crashing."
+    },
+    {
+      "id": "execute.exit_code.nonzero",
+      "api": "execute",
+      "args": ["exit", "3"],
+      "options": { "encoding": "utf-8" },
+      "expect": { "exit_code": 3, "termination": "EXITED", "ok": false },
+      "why": "A non-zero exit is information, not an exception. grep exits 1 to mean 'no match'; raising here would make ordinary code wrong by default."
+    },
+    {
+      "id": "execute.exit_code.zero_is_ok",
+      "api": "execute",
+      "args": ["exit", "0"],
+      "options": {},
+      "expect": { "exit_code": 0, "ok": true },
+      "why": "The ok flag must mean exactly 'exited on its own with status 0', with no other path setting it."
+    },
+    {
+      "id": "execute.stderr.captured",
+      "api": "execute",
+      "args": ["err", "problem", "here"],
+      "options": { "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "", "stderr": "problem here\n" },
+      "why": "stderr must be captured separately from stdout. Merging them loses the distinction callers use to decide what to show a user."
+    },
+    {
+      "id": "execute.streams.both_separate",
+      "api": "execute",
+      "args": ["both", "to-out", "to-err"],
+      "options": { "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "to-out\n", "stderr": "to-err\n" },
+      "why": "Both pipes must be drained concurrently. An implementation that reads stdout to completion first deadlocks as soon as a process fills the stderr pipe buffer."
+    },
+    {
+      "id": "execute.check.raises_on_failure",
+      "api": "execute",
+      "args": ["exit", "7"],
+      "options": { "check": true },
+      "expect": { "raises": "ProcessFailed" },
+      "why": "check=true is the opt-in strict mode. It must convert unsuccessful results into errors, and must carry the result along so the stderr is not lost."
+    },
+    {
+      "id": "execute.check.passes_on_success",
+      "api": "execute",
+      "args": ["echo", "fine"],
+      "options": { "check": true, "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "fine\n" },
+      "why": "check must not raise on success, and must return the same result the non-check path would."
+    },
+
+    {
+      "id": "execute.error.command_not_found",
+      "api": "execute",
+      "executable": "kryon-no-such-executable-xyzzy",
+      "args": [],
+      "options": {},
+      "expect": { "raises": "CommandNotFound" },
+      "why": "Failing to start is an error, not a result. There is no exit code to report for a process that never existed, and a synthetic one would be a flag every caller forgets to check."
+    },
+    {
+      "id": "execute.error.bad_cwd",
+      "api": "execute",
+      "args": ["cwd"],
+      "options": { "cwd": "/kryon-no-such-directory-xyzzy" },
+      "expect": { "raises": "ProcessStartFailed" },
+      "why": "A bad working directory must be its own error, not reported as a missing executable — and must never silently fall back to the current directory, which would run the command somewhere the caller did not intend."
+    },
+    {
+      "id": "execute.error.empty_executable",
+      "api": "execute",
+      "executable": "",
+      "args": [],
+      "options": {},
+      "expect": { "raises": "InvalidArguments" },
+      "why": "Malformed requests are rejected before any system call. Validation is cheaper than cleanup."
+    },
+    {
+      "id": "execute.error.negative_timeout",
+      "api": "execute",
+      "args": ["echo", "x"],
+      "options": { "timeout": -1 },
+      "expect": { "raises": "InvalidArguments" },
+      "why": "A negative timeout is a caller mistake. Treating it as 'no timeout' or 'immediate' both silently do the wrong thing."
+    },
+
+    {
+      "id": "execute.env.inherited",
+      "api": "execute",
+      "args": ["env", "KRYON_CONFORMANCE_INHERITED"],
+      "options": { "encoding": "utf-8" },
+      "setup_env": { "KRYON_CONFORMANCE_INHERITED": "from-parent" },
+      "expect": { "ok": true, "stdout": "from-parent\n" },
+      "why": "The default must be inheritance. A child that cannot see PATH or HOME breaks in ways that look like the program is broken."
+    },
+    {
+      "id": "execute.env.merged",
+      "api": "execute",
+      "args": ["env", "KRYON_TEST_VAR"],
+      "options": { "env": { "KRYON_TEST_VAR": "merged" }, "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "merged\n" },
+      "why": "env merges over the inherited environment rather than replacing it — the common case is adding one variable, not rebuilding the world."
+    },
+    {
+      "id": "execute.env.null_removes",
+      "api": "execute",
+      "args": ["env", "KRYON_CONFORMANCE_INHERITED"],
+      "options": { "env": { "KRYON_CONFORMANCE_INHERITED": null }, "encoding": "utf-8" },
+      "setup_env": { "KRYON_CONFORMANCE_INHERITED": "from-parent" },
+      "expect": { "ok": true, "stdout": "\n" },
+      "why": "Removing a variable must be expressible. Without it, there is no way to stop a secret in the parent environment reaching the child."
+    },
+    {
+      "id": "execute.env.cleared_is_allowlist",
+      "api": "execute",
+      "args": ["env", "KRYON_CONFORMANCE_INHERITED"],
+      "options": { "clear_env": true, "env": { "KRYON_TEST_VAR": "only-this" }, "encoding": "utf-8" },
+      "setup_env": { "KRYON_CONFORMANCE_INHERITED": "from-parent" },
+      "expect": { "ok": true, "stdout": "\n" },
+      "why": "clear_env plus env is the environment allowlist, and it is the primary mechanism for keeping credentials out of a child process."
+    },
+    {
+      "id": "execute.env.cleared_keeps_allowed",
+      "api": "execute",
+      "args": ["env", "KRYON_TEST_VAR"],
+      "options": { "clear_env": true, "env": { "KRYON_TEST_VAR": "only-this" }, "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "only-this\n" },
+      "why": "The allowlist must actually pass through what it allows."
+    },
+
+    {
+      "id": "execute.cwd.honoured",
+      "api": "execute",
+      "args": ["cwd"],
+      "options": { "cwd": "${TMPDIR}", "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout_is_dir": "${TMPDIR}" },
+      "why": "Running a command in the wrong directory is a silent data-corruption bug, not a crash."
+    },
+
+    {
+      "id": "execute.stdin.delivered",
+      "api": "execute",
+      "args": ["cat"],
+      "stdin": "fed through stdin\n",
+      "options": { "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "fed through stdin\n" },
+      "why": "stdin must be written and then closed. A child reading until end-of-input hangs forever if stdin is left open."
+    },
+    {
+      "id": "execute.stdin.empty_closes",
+      "api": "execute",
+      "args": ["cat"],
+      "options": { "timeout": 10, "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "", "termination": "EXITED" },
+      "why": "With no stdin supplied, stdin must still be closed rather than inherited or left open — otherwise every `cat`-like process hangs until the timeout."
+    },
+
+    {
+      "id": "execute.timeout.fires",
+      "api": "execute",
+      "args": ["sleep", "30"],
+      "options": { "timeout": 1 },
+      "expect": { "termination": "TIMEOUT", "ok": false, "duration_at_most": 15 },
+      "why": "A timeout that does not fire is worse than no timeout: the caller believed they were protected."
+    },
+    {
+      "id": "execute.timeout.keeps_partial_output",
+      "api": "execute",
+      "args": ["lines", "10000", "0.01"],
+      "options": { "timeout": 1, "encoding": "utf-8" },
+      "expect": { "termination": "TIMEOUT", "stdout_contains": "line 0" },
+      "why": "Output collected before the kill is the only evidence of what the process was doing. Discarding it makes timeouts undebuggable."
+    },
+    {
+      "id": "execute.timeout.raises_with_check",
+      "api": "execute",
+      "args": ["sleep", "30"],
+      "options": { "timeout": 1, "check": true },
+      "expect": { "raises": "ProcessTimeout" },
+      "why": "check must map each termination reason to its own error, so callers can retry a timeout without retrying a genuine failure."
+    },
+    {
+      "id": "execute.timeout.kills_signal_ignorer",
+      "api": "execute",
+      "args": ["ignoreterm", "30"],
+      "options": { "timeout": 1, "kill_grace": 1 },
+      "platforms": ["posix"],
+      "expect": { "termination": "TIMEOUT", "duration_at_most": 20 },
+      "why": "SIGTERM is a request. A process that ignores it must still be killed after the grace period, or the timeout is a suggestion and the caller is blocked forever."
+    },
+
+    {
+      "id": "execute.limit.truncates_and_stops",
+      "api": "execute",
+      "args": ["spam", "10000000"],
+      "options": { "max_output_bytes": 1024, "timeout": 30 },
+      "expect": {
+        "termination": "OUTPUT_LIMIT",
+        "stdout_truncated": true,
+        "stdout_bytes_at_most": 1024
+      },
+      "why": "The point of an output cap is bounded memory. An implementation that buffers everything and truncates at the end has not enforced anything."
+    },
+    {
+      "id": "execute.limit.not_hit_when_under",
+      "api": "execute",
+      "args": ["echo", "small"],
+      "options": { "max_output_bytes": 1024, "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "small\n", "stdout_truncated": false },
+      "why": "A cap that is not reached must be invisible — no truncation flag, no altered termination."
+    },
+    {
+      "id": "execute.limit.raises_with_check",
+      "api": "execute",
+      "args": ["spam", "10000000"],
+      "options": { "max_output_bytes": 1024, "check": true, "timeout": 30 },
+      "expect": { "raises": "ResourceLimitExceeded" },
+      "why": "Hitting a resource limit is distinguishable from failing, so a caller can raise the limit rather than debug the command."
+    },
+
+    {
+      "id": "execute.encoding.utf8_roundtrip",
+      "api": "execute",
+      "args": ["unicode"],
+      "options": { "encoding": "utf-8" },
+      "expect": { "ok": true, "stdout": "héllo · 世界 · 🚀\n" },
+      "why": "Terminal output is not ASCII. Multi-byte characters, combining marks and astral-plane emoji must survive the round trip intact."
+    },
+    {
+      "id": "execute.encoding.bytes_by_default",
+      "api": "execute",
+      "args": ["unicode"],
+      "options": {},
+      "expect": { "ok": true, "stdout_is_bytes": true },
+      "why": "Without an explicit encoding, output is bytes. Guessing a codec is how mojibake gets baked into logs."
+    },
+    {
+      "id": "execute.encoding.ansi_passthrough",
+      "api": "execute",
+      "args": ["ansi"],
+      "options": {},
+      "expect": { "ok": true, "stdout_contains_bytes": "1b5b33316d" },
+      "why": "Escape sequences must reach the caller untouched. Kryon captures terminal output; interpreting it is the emulator's job, and stripping it would make that impossible."
+    },
+
+    {
+      "id": "shell.interprets",
+      "api": "execute_shell",
+      "shell_command": { "posix": "exit 5", "windows": "exit 5" },
+      "options": {},
+      "expect": { "exit_code": 5, "termination": "EXITED" },
+      "why": "execute_shell must actually reach a shell, otherwise its separate existence is a lie and callers will reach for something worse."
+    },
+
+    {
+      "id": "spawn.streams_before_exit",
+      "api": "spawn",
+      "args": ["lines", "5", "0.05"],
+      "options": {},
+      "expect": { "streamed_chunks_at_least": 1, "stdout_contains": "line 0", "stdout_contains_last": "line 4" },
+      "why": "The whole reason spawn exists is that output arrives while the process runs. If chunks only appear at exit, this is execute with extra steps."
+    },
+    {
+      "id": "spawn.stdin_roundtrip",
+      "api": "spawn",
+      "args": ["cat"],
+      "write": ["one\n", "two\n"],
+      "close_stdin": true,
+      "options": {},
+      "expect": { "stdout_contains": "one\n", "stdout_contains_last": "two\n", "exit_code": 0 },
+      "why": "Interactive use is write-then-read repeatedly. A write that is buffered until close makes every REPL-style session hang."
+    },
+    {
+      "id": "spawn.terminate_stops_process",
+      "api": "spawn",
+      "args": ["sleep", "30"],
+      "options": {},
+      "terminate_after": 0.2,
+      "expect": { "running_after_terminate": false, "duration_at_most": 20 },
+      "why": "A process the caller asked to stop must actually be gone, on every platform, including the one with no SIGTERM."
+    },
+    {
+      "id": "spawn.scope_exit_terminates",
+      "api": "spawn",
+      "args": ["sleep", "30"],
+      "options": {},
+      "scope_exit_only": true,
+      "expect": { "running_after_scope": false },
+      "why": "Leaving the block must kill the process. A leaked child outlives the program that created it and nobody notices until a machine runs out of process slots."
+    }
+  ]
+}
