@@ -10,7 +10,7 @@ with an API designed so the dangerous thing is the one you have to ask for by na
 [![Python](https://img.shields.io/pypi/pyversions/kryon.svg)](pyproject.toml)
 
 > **`1.0.0`.** Command execution and process streaming are implemented and pass the
-> [cross-language conformance corpus](../tests/conformance/cases.json) on Linux, macOS and
+> [cross-language conformance corpus](tests/conformance/cases.json) on Linux, macOS and
 > Windows. PTY, terminal emulation and remote transports are specified but **not implemented**.
 
 This is the Python SDK of [Kryon](https://github.com/PIYUSH-MISHRA-00/kryon). It has **zero
@@ -96,7 +96,7 @@ untrusted input.**
 Timeouts and output caps manage resources. They do not contain a hostile program: a process
 that ignores `SIGTERM` still runs until the kill lands, and anything it did before that is
 done. Isolation is the job of a container, a VM, or an unprivileged account. See
-[the threat model](../docs/security/threat-model.md).
+[the threat model](docs/security/threat-model.md).
 
 ## API
 
@@ -169,9 +169,9 @@ ruff check . && ruff format --check .
 mypy
 ```
 
-The conformance corpus is [`tests/conformance/cases.json`](../tests/conformance/cases.json)
+The conformance corpus is [`tests/conformance/cases.json`](tests/conformance/cases.json)
 in the repository root and is shared with every other SDK. Tests drive a small
-[helper program](tests/helper.py) rather than real system commands, so they behave the same
+[helper program](python/tests/helper.py) rather than real system commands, so they behave the same
 on every platform and touch nothing outside a temporary directory.
 
 ## License
