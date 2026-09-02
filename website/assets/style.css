@@ -232,8 +232,7 @@ header.site {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(10px);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -284,6 +283,28 @@ nav.site a:hover {
 @media (max-width: 760px) {
   nav.site a.hide-sm {
     display: none;
+  }
+}
+
+/* At phone widths the brand plus the remaining links exceed the viewport, which forces a
+   horizontal scrollbar on the whole page. Let the header wrap rather than dropping links --
+   a Docs link nobody can reach is worse than a header two rows tall. */
+@media (max-width: 560px) {
+  header.site .wrap {
+    height: auto;
+    min-height: 56px;
+    padding-block: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  nav.site {
+    gap: 0.1rem;
+  }
+
+  nav.site a {
+    padding: 0.35rem 0.45rem;
+    font-size: 0.85rem;
   }
 }
 
