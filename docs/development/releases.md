@@ -60,8 +60,8 @@ a human approving it, and the credentials live there rather than in the workflow
 | PyPI | `kryon` | Trusted Publishing (OIDC) | ✅ Configured and published |
 | npm | `kryon-exec` | `NPM_TOKEN`, or Trusted Publishing | ✅ Published |
 | pub.dev | `kryon` | OIDC, after a manual first publish | ✅ Published |
-| Maven Central | `io.github.piyush-mishra-00:kryon` | Portal token + GPG key | **Not configured** |
-| Maven Central | `…:kryon-kotlin` | Same | **Not configured** |
+| Maven Central | `io.github.piyush-mishra-00:kryon` | GPG key (local agent) | Signed bundle ready — pending upload |
+| Maven Central | `…:kryon-kotlin` | Same | Signed bundle ready — pending upload |
 
 ### PyPI
 
@@ -132,8 +132,8 @@ releasable would be worse than one that stops.
   workflow file, never in a README, never in shell history.
 - Prefer OIDC over long-lived tokens wherever the registry offers it.
 - Nothing is published until it builds, tests and passes registry validation.
-- Nothing is described as "published" until it actually is. The tables in this repository say
-  "awaiting credentials" for four registries because that is the truth.
+- Nothing is described as "published" until it actually is. PyPI, pub.dev and npm say
+  published because they are; Maven Central does not, because it is not.
 
 ## GitHub releases
 
