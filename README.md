@@ -28,8 +28,8 @@ with one conceptual API across Python, TypeScript, Dart, Java and Kotlin.
 > not exist; where something is planned, it says so.
 >
 > **Python, TypeScript and Dart are published.** The two JVM artifacts are built, tested and
-> awaiting Maven Central credentials — the [status table](#install) says exactly where each
-> one stands.
+> GPG-signed; the Maven Central upload is pending — the [status table](#install) says exactly
+> where each one stands.
 >
 > On npm the package is **`kryon-exec`**: the registry refuses `kryon` as too similar to the
 > existing `cron` package. That is a typosquatting filter, not a name clash — nobody holds
@@ -190,11 +190,12 @@ recorded CI log into a rendered screen needs the emulator and nothing else.
 | **Python** | `pip install kryon` | ✅ **Published to PyPI** |
 | **TypeScript** | `npm install kryon-exec` | ✅ **Published to npm** |
 | **Dart** | `dart pub add kryon` | ✅ **Published to pub.dev** |
-| **Java** | `io.github.piyush-mishra-00:kryon:1.0.0` | ✅ Implemented · awaiting Maven Central credentials |
-| **Kotlin** | `io.github.piyush-mishra-00:kryon-kotlin:1.0.0` | ✅ Implemented · awaiting Maven Central credentials |
+| **Java** | `io.github.piyush-mishra-00:kryon:1.0.0` | ✅ Implemented · signed, pending Maven Central upload |
+| **Kotlin** | `io.github.piyush-mishra-00:kryon-kotlin:1.0.0` | ✅ Implemented · signed, pending Maven Central upload |
 
-"Awaiting credentials" means exactly that: the packages build, test and validate, and the release
-workflows are configured — the registry accounts are a manual step. See
+"Pending upload" means exactly that: both JVM artifacts build, test, validate and are GPG-signed,
+and the release workflow is configured — the upload to Maven Central is a manual step, not
+unfinished code. See
 [releases](docs/development/releases.md). Until they land, install those four from source:
 
 ```bash

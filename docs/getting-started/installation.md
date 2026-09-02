@@ -10,12 +10,14 @@ All five SDKs implement the same execution API and pass the same
 | Python | `kryon` | PyPI | ✅ | ✅ |
 | TypeScript / JavaScript | `kryon-exec` | npm | ✅ | ✅ |
 | Dart | `kryon` | pub.dev | ✅ | ✅ |
-| Java | `io.github.piyush-mishra-00:kryon` | Maven Central | ✅ | Awaiting credentials |
-| Kotlin | `io.github.piyush-mishra-00:kryon-kotlin` | Maven Central | ✅ | Awaiting credentials |
+| Java | `io.github.piyush-mishra-00:kryon` | Maven Central | ✅ | Pending upload |
+| Kotlin | `io.github.piyush-mishra-00:kryon-kotlin` | Maven Central | ✅ | Pending upload |
 
-"Awaiting credentials" means the package builds, tests and validates, and the release workflow is
-configured — the registry account is a manual step that has not happened yet. It does **not** mean
-the code is unfinished. See [releases](../development/releases.md) for exactly what remains.
+"Pending upload" means the package builds, tests, validates and is GPG-signed, and the release
+workflow is configured — the upload to Maven Central is a manual step that has not happened yet.
+It does **not** mean the code is unfinished. In the meantime the JVM jars are attached to the
+[v1.0.0 GitHub release](https://github.com/PIYUSH-MISHRA-00/kryon/releases/tag/v1.0.0). See
+[releases](../development/releases.md) for exactly what remains.
 
 ## Python
 
