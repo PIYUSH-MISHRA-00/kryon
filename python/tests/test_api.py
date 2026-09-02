@@ -311,3 +311,30 @@ def test_repr_is_useful_and_short(runtime, helper):
     text = repr(result)
     assert "exit_code=0" in text and "EXITED" in text
     assert len(text) < 300, "a repr that dumps output is unusable in a debugger"
+
+
+async def test_async_execute_does_not_lose_output_written_just_before_exit(async_runtime, helper):
+    """A child that writes and exits immediately must still have its output collected.
+
+    `proc.wait()` returns when the child exits, which says nothing about whether its
+    output has been read out of the pipe. An earlier version cancelled the drain tasks
+    the instant wait() returned, so whatever was still buffered was thrown away and a
+    command that plainly wrote to stdout came back with `stdout == ""`. It passed on
+    Linux almost always and failed on macOS roughly one run in ten, which is the worst
+    possible failure rate -- rare enough to look like infrastructure.
+
+    Repeated because it is a race: one iteration proves nothing, and the loop is what
+    makes the old behaviour fail reliably rather than occasionally.
+    """
+    for _ in range(30):
+        result = await async_runtime.execute(helper[0], [*helper[1:], "both", "to-out", "to-err"])
+        assert result.stdout == b"to-out\n"
+        assert result.stderr == b"to-err\n"
+
+
+async def test_async_execute_collects_output_larger_than_a_pipe_buffer(async_runtime, helper):
+    """The tail of a large write is the part a premature cancel loses."""
+    size = 512 * 1024
+    result = await async_runtime.execute(helper[0], [*helper[1:], "spam", str(size)])
+    assert len(result.stdout) == size, "output truncated: the drain was cut short"
+    assert not result.stdout_truncated
