@@ -153,7 +153,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: npm
-      url: https://www.npmjs.com/package/kryon
+      url: https://www.npmjs.com/package/kryon-exec
     permissions:
       id-token: write
     steps:

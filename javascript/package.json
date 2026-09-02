@@ -1,5 +1,5 @@
 {
-  "name": "kryon",
+  "name": "kryon-exec",
   "version": "1.0.0",
   "description": "Powerful terminal execution, everywhere â€” command execution, process control and streaming, with one conceptual API across languages.",
   "keywords": [

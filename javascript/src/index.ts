@@ -6,7 +6,7 @@
  * Node entry point.
  *
  * ```ts
- * import { Runtime } from "kryon";
+ * import { Runtime } from "kryon-exec";
  *
  * const runtime = new Runtime({ encoding: "utf8", timeout: 30_000 });
  *
@@ -33,7 +33,7 @@
  * - **Kryon is not a sandbox.** Its timeouts and output caps manage resources; they do not
  *   contain a hostile program. See `docs/security/threat-model.md`.
  *
- * For browsers, import `kryon/browser` -- it carries the types and errors without
+ * For browsers, import `kryon-exec/browser` -- it carries the types and errors without
  * `node:child_process`, because a browser cannot execute host commands at all.
  *
  * @packageDocumentation
