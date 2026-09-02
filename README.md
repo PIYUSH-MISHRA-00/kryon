@@ -27,9 +27,8 @@ with one conceptual API across Python, TypeScript, Dart, Java and Kotlin.
 > `1.x` work — see the [roadmap](ROADMAP.md). Nothing in this README describes a feature that does
 > not exist; where something is planned, it says so.
 >
-> **Python, TypeScript and Dart are published.** The two JVM artifacts are built, tested and
-> GPG-signed; the Maven Central upload is pending — the [status table](#install) says exactly
-> where each one stands.
+> **All five SDKs are published** — PyPI, npm, pub.dev and Maven Central (twice). The
+> [status table](#install) says exactly where each one lives.
 >
 > On npm the package is **`kryon-exec`**: the registry refuses `kryon` as too similar to the
 > existing `cron` package. That is a typosquatting filter, not a name clash — nobody holds
@@ -190,13 +189,13 @@ recorded CI log into a rendered screen needs the emulator and nothing else.
 | **Python** | `pip install kryon` | ✅ **Published to PyPI** |
 | **TypeScript** | `npm install kryon-exec` | ✅ **Published to npm** |
 | **Dart** | `dart pub add kryon` | ✅ **Published to pub.dev** |
-| **Java** | `io.github.piyush-mishra-00:kryon:1.0.0` | ✅ Implemented · signed, pending Maven Central upload |
-| **Kotlin** | `io.github.piyush-mishra-00:kryon-kotlin:1.0.0` | ✅ Implemented · signed, pending Maven Central upload |
+| **Java** | `io.github.piyush-mishra-00:kryon:1.0.0` | ✅ **Published to Maven Central** |
+| **Kotlin** | `io.github.piyush-mishra-00:kryon-kotlin:1.0.0` | ✅ **Published to Maven Central** |
 
-"Pending upload" means exactly that: both JVM artifacts build, test, validate and are GPG-signed,
-and the release workflow is configured — the upload to Maven Central is a manual step, not
-unfinished code. See
-[releases](docs/development/releases.md). Until they land, install those four from source:
+Every artifact on Maven Central is GPG-signed with key `704CD5A4984CD865`, which is on
+keyserver.ubuntu.com and keys.openpgp.org — verify before you trust. See
+[releases](docs/development/releases.md) for how each one is published. To build from source
+instead:
 
 ```bash
 git clone https://github.com/PIYUSH-MISHRA-00/kryon.git
