@@ -1,7 +1,7 @@
 import java.util.Base64
 
 plugins {
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.4.10"
     `java-library`
     `maven-publish`
     signing
@@ -20,15 +20,15 @@ dependencies {
     // The one dependency in the whole project, and it earns its place: coroutines
     // are how asynchronous Kotlin is written, and reimplementing structured
     // concurrency to avoid the dependency would be strictly worse than using it.
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-    testImplementation(platform("org.junit:junit-bom:5.11.3"))
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
+    testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Test-only. The published artifact carries only coroutines.
-    testImplementation("com.google.code.gson:gson:2.11.0")
+    testImplementation("com.google.code.gson:gson:2.14.0")
 }
 
 kotlin {
